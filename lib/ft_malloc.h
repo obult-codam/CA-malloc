@@ -7,7 +7,9 @@
 
 # include "libft.h"
 
-# define TINY_SIZE 128;
+# define TINY_SIZE 64;
+# define SMALL_SIZE 512;
+# define MIN_ZONE_ALLOC 100;
 
 t_list	*g_head = NULL;
 
