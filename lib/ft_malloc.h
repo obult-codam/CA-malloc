@@ -3,28 +3,30 @@
 
 # include <stddef.h>
 # include <unistd.h>
+# include <sys/mman.h>
+
+# include "libft.h"
 
 # define TINY_SIZE 128;
 
-void	*g_head = NULL;
+t_list	*g_head = NULL;
 
-enum e_zone_type {
+typedef enum e_zone_type {
 	TINY,
 	SMALL,
 	LARGE,
-};
+}	t_zone_type;
+
+typedef struct s_zone_header {
+	t_list		*alloc_head;
+	size_t		zone_size;
+	t_zone_type	zone_type;
+}	t_zone_header;
 
 typedef struct s_alloc_header {
 	size_t	size;
-	void	*next;
 }	t_alloc_header;
 
-typedef struct s_zone_header {
-	void				*alloc_head;
-	size_t				total_size;
-	void				*next_zone;
-	enum e_zone_type	zone_type;
-}	t_zone_header;
 
 // Public malloc API
 void	show_alloc_mem();
