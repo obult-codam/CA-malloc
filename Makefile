@@ -1,11 +1,16 @@
-NAME		= malloctest
-OBJ			= malloc testmain
+ifeq ($(HOSTTYPE),)
+	HOSTTYPE := $(shell uname -m)_$(shell uname -s)
+endif
+NAME		= libft_malloc_${HOSTTYPE}.so
+SYMNAME 	:= libft_malloc.so
+OBJ			= malloc
 OBJS		= $(addsuffix .o, $(addprefix obj/, ${OBJ}))
 CC			= gcc
 RM			= rm -f
 HEADER		= -I lib/ 
-CFLAGS		= #-Wall -Wextra -Werror
+CFLAGS		= -fsanitize=address #-Wall -Wextra -Werror
 LIBFT		= Libft/libft.a
+
 
 all:		${NAME}
 
@@ -26,7 +31,10 @@ re:			fclean all
 
 ${NAME}:	${OBJS}
 				@${MAKE} bonus -C Libft --no-print-directory
-				@${CC} $(OBJS) $(LIBFT) $(CFLAGS) -o $@
+				@${CC} -shared $(OBJS) $(LIBFT) $(CFLAGS) -o $@
 				$(info ************  malloc Ready!)
+
+test:	${NAME}
+	gcc src/testmain.c -L. ${NAME} ${HEADER} -o malloctest
 
 .PHONY: all clean fclean re cleanft
