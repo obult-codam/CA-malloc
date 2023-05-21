@@ -3,6 +3,7 @@ ifeq ($(HOSTTYPE),)
 endif
 NAME		= libft_malloc_${HOSTTYPE}.so
 SYMNAME 	:= libft_malloc.so
+TESTNAME	:= malloctest
 OBJ			= malloc
 OBJS		= $(addsuffix .o, $(addprefix obj/, ${OBJ}))
 CC			= gcc
@@ -24,7 +25,7 @@ clean:
 
 fclean:		clean
 				@${MAKE} fclean -C Libft --no-print-directory
-				@${RM} ${NAME}
+				@${RM} ${NAME} ${SYMNAME} ${TESTNAME}
 				$(info ************  malloc Removed)
 
 re:			fclean all
@@ -32,9 +33,10 @@ re:			fclean all
 ${NAME}:	${OBJS}
 				@${MAKE} bonus -C Libft --no-print-directory
 				@${CC} -shared $(OBJS) $(LIBFT) $(CFLAGS) -o $@
+				@ln -s ${NAME} ${SYMNAME}
 				$(info ************  malloc Ready!)
 
 test:	${NAME}
-	gcc src/testmain.c -L. ${NAME} ${HEADER} -o malloctest
+	gcc src/testmain.c -L. ${SYMNAME} ${HEADER} -o ${TESTNAME}
 
 .PHONY: all clean fclean re cleanft
