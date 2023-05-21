@@ -1,17 +1,18 @@
 #ifndef FT_MALLOC
 # define FT_MALLOC
 
+#pragma once
+
 # include <stddef.h>
 # include <unistd.h>
 # include <sys/mman.h>
+# include <stdbool.h>
 
 # include "libft.h"
 
-# define TINY_SIZE 64;
-# define SMALL_SIZE 512;
-# define MIN_ZONE_ALLOC 100;
-
-t_list	*g_head = NULL;
+# define TINY_SIZE 64
+# define SMALL_SIZE 512
+# define MIN_ZONE_ALLOC 100
 
 typedef enum e_zone_type {
 	TINY,
@@ -28,7 +29,6 @@ typedef struct s_zone_header {
 typedef struct s_alloc_header {
 	size_t	size;
 }	t_alloc_header;
-
 
 // Public malloc API
 void	show_alloc_mem();

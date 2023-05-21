@@ -1,4 +1,5 @@
 #include "libft.h"
+#include <unistd.h>
 
 static int		ft_strclen(char *s, char c)
 {

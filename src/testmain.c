@@ -3,6 +3,9 @@
 
 int	main(void) {
 	printf("pagesize: %i\n", getpagesize());
-	printf("head: %p", g_head);
+	void *head;
+	printf("head: %p\n", head);
+	head = malloc(8);
+	printf("head: %p\n", head);
 	return (0);
 }

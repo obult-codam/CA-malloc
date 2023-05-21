@@ -1,4 +1,5 @@
 #include "libft.h"
+#include <stdbool.h>
 
 t_list	*ft_lstfind(t_list *start, bool (*f)(void *)) {
 	while (start != NULL) {
@@ -9,7 +10,7 @@ t_list	*ft_lstfind(t_list *start, bool (*f)(void *)) {
 	return (NULL);
 }
 
-t_list	*ft_lstfind_l(t_list *start, void *data bool (*f)(t_list *, void *)) {
+t_list	*ft_lstfind_l(t_list *start, void *data, bool (*f)(t_list *, void *)) {
 	while (start != NULL) {
 		if (f(start, data))
 			return (start);
