@@ -142,6 +142,10 @@ void	*ll_alloc_strat(t_zone_header *zone, size_t size) {
 	}
 }
 
+void	*handle_large_zone(size_t size) {
+
+}
+
 // use find_zone to find a suitable zone else use create_zone to create one,
 // when that fails return NULL 
 void	*malloc(size_t size) {	// possibly already malloc
@@ -150,7 +154,7 @@ void	*malloc(size_t size) {	// possibly already malloc
 
 	// create zone directly and append to tail for LARGE zone
 	// if (z_type == LARGE)
-	// 	return handle_large_zone();
+	// 	return handle_large_zone(size);
 	// check if there is room free in an existing zone
 	l_tmp = find_zone(g_head, z_type);
 	while (l_tmp != NULL) {
@@ -160,7 +164,9 @@ void	*malloc(size_t size) {	// possibly already malloc
 		l_tmp = find_zone(l_tmp->next, z_type);
 	}
 	// create zone
-	t_list	*l_new_zone = create_zone(z_type, 0);	// not used for non-LARGE zones
+	// size not used for non-LARGE zones
+	// large zones are always created here
+	t_list	*l_new_zone = create_zone(z_type, size);
 	if (l_new_zone == NULL)
 		return (l_new_zone);
 

@@ -37,6 +37,6 @@ ${NAME}:	${OBJS}
 				$(info ************  malloc Ready!)
 
 test:	${NAME}
-	gcc src/testmain.c -L. ${SYMNAME} ${HEADER} -o ${TESTNAME}
+	gcc src/testmain.c -L. ${SYMNAME} ${LIBFT} ${HEADER} -o ${TESTNAME}
 
 .PHONY: all clean fclean re cleanft
