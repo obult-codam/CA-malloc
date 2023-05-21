@@ -81,6 +81,30 @@ t_zone_type zone_type(size_t size) {
 	return (LARGE);
 }
 
+bool	is_large_enough(void *begin, void *end, size_t requested_size, size_t header_size) {
+	return ((end - begin - header_size - requested_size) >= 0);
+}
+
+bool	ll_next_has_space(t_list *node, void *data) {
+	size_t	requested_size = *(size_t *)data;
+	if (node == NULL || node->next == NULL)
+		return (true);
+	return is_large_enough(node, node->next, requested_size, sizeof(t_list) + sizeof(t_alloc_header));
+}
+
+void	*ll_alloc_strat(t_zone_header *zone, size_t size) {
+	t_list			*l_item;
+
+	l_item = ft_lstfind_l(zone->alloc_head, &size);
+	if (l_item == NULL)
+		// return create alloc and save it on alloc_head
+	else if (l_item-next == NULL)
+		// check if there is enough space at tail
+		// return NULL or add at tail and return create alloc and save on tail
+	else
+		// add this alloc inbetween this and next alloc
+}
+
 // use find_zone to find a suitable zone else use create_zone to create one,
 // when that fails return NULL 
 void	*provide_zone(size_t size) {	// possibly already malloc
