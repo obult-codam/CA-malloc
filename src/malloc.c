@@ -137,10 +137,6 @@ void	*ll_alloc_strat(t_zone_header *zone, size_t size) {
 	}
 }
 
-void	*handle_large_zone(size_t size) {
-
-}
-
 // use find_zone to find a suitable zone else use create_zone to create one,
 // when that fails return NULL 
 void	*malloc(size_t size) {	// possibly already malloc

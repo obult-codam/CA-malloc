@@ -18,6 +18,12 @@ int	main(void) {
 	printf("large : %p\n", large);
 	ft_bzero(large, 4096);
 
+	show_alloc_mem();
+
+	free(small);
+
+	show_alloc_mem();
+
 
 	return (0);
 }

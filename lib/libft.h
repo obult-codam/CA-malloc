@@ -6,7 +6,7 @@
 /*   By: obult <obult@student.codam.nl>               +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2020/11/04 17:16:27 by obult         #+#    #+#                 */
-/*   Updated: 2023/05/21 20:46:08 by obult         ########   odam.nl         */
+/*   Updated: 2023/05/22 16:23:54 by obult         ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,5 +72,6 @@ int				get_next_line(int fd, char **line);
 
 t_list	*ft_lstfind_l(t_list *start, void *data, bool (*f)(t_list *, void *));
 t_list	*ft_lstfind(t_list *start, bool (*f)(void *));
+t_list	**ft_lstfind_pl(t_list **start, void *data, bool (*f)(t_list *, void *));
 
 #endif

@@ -14,6 +14,11 @@
 # define SMALL_SIZE 512
 # define MIN_ZONE_ALLOC 100
 
+extern t_list *g_head;
+extern const size_t LL_NODE_SIZE;
+extern const size_t ZONE_HEADER_SIZE;
+extern const size_t ALLOC_HEADER_SIZE;
+
 typedef enum e_zone_type {
 	TINY,
 	SMALL,

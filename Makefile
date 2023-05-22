@@ -4,7 +4,7 @@ endif
 NAME		= libft_malloc_${HOSTTYPE}.so
 SYMNAME 	:= libft_malloc.so
 TESTNAME	:= malloctest
-OBJ			= malloc
+OBJ			= global_const malloc free show_alloc_mem
 OBJS		= $(addsuffix .o, $(addprefix obj/, ${OBJ}))
 CC			= gcc
 RM			= rm -f
@@ -38,5 +38,9 @@ ${NAME}:	${OBJS}
 
 test:	${NAME}
 	gcc src/testmain.c -L. ${SYMNAME} ${LIBFT} ${HEADER} -o ${TESTNAME}
+
+# fast test
+ft: re test
+	./malloctest
 
 .PHONY: all clean fclean re cleanft
