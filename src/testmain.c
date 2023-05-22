@@ -20,7 +20,7 @@ int	main(void) {
 
 	show_alloc_mem();
 
-	free(small);
+	free(large);
 
 	show_alloc_mem();
 

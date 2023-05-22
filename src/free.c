@@ -1,5 +1,7 @@
 #include "ft_malloc.h"
 
+void	print_zone_size(t_zone_header *zone);
+
 void	double_free() {
 	// printf("double_free\n");
 	exit(2);
@@ -12,7 +14,7 @@ void	pointer_not_allocated() {
 
 bool	is_inside_zone(t_list *l_zone, void *ptr) {
 	t_zone_header *zone = (t_zone_header *)l_zone->content;
-	return (ptr >= (void *)l_zone && ptr < (void *)(l_zone + zone->zone_size));
+	return (ptr >= (void *)l_zone && ptr < ((void *)l_zone + zone->zone_size));
 }
 
 bool	is_linked_alloc(t_list *l_alloc, void *ptr) {

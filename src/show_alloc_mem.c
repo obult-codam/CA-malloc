@@ -2,12 +2,12 @@
 #include "libft.h"
 #include <stdio.h>
 
-static void	print_zone_size(t_zone_header *zone) {
+void	print_zone_size(t_zone_header *zone) {
 	char *zones_as_string[] = { "TINY: ", "SMALL:", "LARGE:" };
 	printf("%s : %p size: %lu\n", zones_as_string[zone->zone_type], zone - LL_NODE_SIZE, zone->zone_size);
 }
 
-static void print_alloc_info(void *v_alloc) {
+void print_alloc_info(void *v_alloc) {
 	t_alloc_header *alloc = (t_alloc_header *)v_alloc;
 	void	*start = alloc + ALLOC_HEADER_SIZE;
 	void	*end = start + alloc->size;
