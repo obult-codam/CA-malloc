@@ -21,9 +21,11 @@ int	main(void) {
 	show_alloc_mem();
 
 	free(large);
+	printf("\n\n");
 
 	show_alloc_mem();
-
+	// need to cleanup empty blocks
+	// insert new blocks in right spot in LL
 
 	return (0);
 }
