@@ -1,10 +1,5 @@
 #include "ft_malloc.h"
 
-t_list	*g_head = NULL;
-const size_t LL_NODE_SIZE = sizeof(t_list);
-const size_t ZONE_HEADER_SIZE = sizeof(t_zone_header);
-const size_t ALLOC_HEADER_SIZE = sizeof(t_alloc_header);
-
 // size only used on LARGE objects
 size_t	calculate_zone_size(t_zone_type z_type, size_t size) {
 	size_t	zone_sizes[2] = { TINY_SIZE, SMALL_SIZE };
