@@ -35,6 +35,24 @@ typedef struct s_alloc_header {
 	size_t	size;
 }	t_alloc_header;
 
+// ### INTERNAL ###
+// 		# zone management
+void	cleanup_zone_check(t_list **pl_zone);
+t_list	*create_zone(t_zone_type z_type, size_t alloc_size);
+t_list	*find_zone_by_type(t_list *start, t_zone_type z_type);
+t_list	**find_zone_pl(void *ptr);
+
+// 		# reporting
+void	double_free();
+void	pointer_not_allocated();
+
+
+// 		# ll alloc management
+t_list	**ll_find_alloc(void *ptr, t_list *l_zone);
+void	*ll_create_alloc(t_zone_header *zone, size_t size);
+void	ll_cleanup_alloc(void *ptr, t_list *l_zone);
+
+
 // Public malloc API
 void	show_alloc_mem();
 void	free(void *ptr);

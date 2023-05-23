@@ -4,7 +4,11 @@ endif
 NAME		= libft_malloc_${HOSTTYPE}.so
 SYMNAME 	:= libft_malloc.so
 TESTNAME	:= malloctest
-OBJ			= global_const malloc free show_alloc_mem
+OBJ			= global_const malloc free show_alloc_mem \
+				reporting \
+				zone_cleanup zone_create zone_find \
+				ll_alloc_cleanup ll_alloc_create ll_alloc_find
+
 OBJS		= $(addsuffix .o, $(addprefix obj/, ${OBJ}))
 CC			= gcc
 RM			= rm -f

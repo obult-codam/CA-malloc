@@ -25,7 +25,6 @@ int	main(void) {
 	printf("\n\n");
 
 	show_alloc_mem();
-	// need to cleanup empty blocks
 	// insert new blocks in right spot in LL
 
 	return (0);

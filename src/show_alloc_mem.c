@@ -16,6 +16,7 @@ void print_alloc_info(void *v_alloc) {
 
 void	show_alloc_mem() {
 	t_list *l_zone = g_head;
+
 	while (l_zone) {
 		t_zone_header *zone = (t_zone_header *)l_zone->content;
 		// print zone info (type + start location)
