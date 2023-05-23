@@ -21,6 +21,7 @@ int	main(void) {
 	show_alloc_mem();
 
 	free(large);
+	free(small);
 	printf("\n\n");
 
 	show_alloc_mem();

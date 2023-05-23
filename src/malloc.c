@@ -92,7 +92,6 @@ bool	ll_next_has_space(t_list *node, void *data) {
 	return is_large_enough(node, node->next, requested_size, LL_NODE_SIZE + ALLOC_HEADER_SIZE);
 }
 
-
 void	*create_insert_alloc(t_list **insert, t_list *new, size_t size) {
 	t_list	*tail_end = *insert;
 	*insert = new;
