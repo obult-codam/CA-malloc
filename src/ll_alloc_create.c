@@ -39,8 +39,8 @@ size_t	ll_and_alloc_size(t_list *node) {
 
 bool	tail_not_enough_space(t_zone_header *zone, t_list *prev, size_t size) {
 	// node_size included for the node pointing to the zone
-	void *end = zone + zone->zone_size - LL_NODE_SIZE;
-	void *begin = prev + ll_and_alloc_size(prev);
+	void *end = (void *)zone + zone->zone_size - LL_NODE_SIZE;
+	void *begin = (void *)prev + ll_and_alloc_size(prev);
 	return ((begin + size) > end);
 }
 

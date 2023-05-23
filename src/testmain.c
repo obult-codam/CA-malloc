@@ -12,8 +12,11 @@ int	main(void) {
 	printf("small : %p\n", malloc(512));
 	printf("small : %p\n", malloc(512));
 
-	printf("small : %p\n", malloc(2048));
-	printf("small : %p\n", malloc(2048));
+	printf("large : %p\n", malloc(2048));
+	printf("large : %p\n", malloc(2048));
+	printf("large : %p\n", malloc(2048));
+	printf("large : %p\n", malloc(2048));
+	printf("large : %p\n", malloc(2048));
 
 	show_alloc_mem();
 	return (0);
