@@ -1,14 +1,26 @@
 #include "ft_malloc.h"
 
-bool	is_large_enough(void *begin, void *end, size_t requested_size, size_t header_size) {
-	return ((end - begin - header_size - requested_size) >= 0);
+bool	is_large_enough(void *begin, void *end, size_t requested_size) {
+	return ((end - begin - requested_size) >= 0);
 }
+
+// 
 
 bool	ll_next_has_space(t_list *node, void *data) {
 	size_t	requested_size = *(size_t *)data;
 	if (node == NULL || node->next == NULL)
 		return (true);
-	return is_large_enough(node, node->next, requested_size, LL_NODE_SIZE + ALLOC_HEADER_SIZE);
+	size_t	alloc_size = ((t_alloc_header *)node->content)->size;
+	void	*start = (void *)node + alloc_size + LL_NODE_SIZE + ALLOC_HEADER_SIZE;
+	return (is_large_enough(start, node->next, requested_size + LL_NODE_SIZE + ALLOC_HEADER_SIZE));
+}
+
+bool	ll_realoc_has_space(t_list *node, size_t size) {
+	if (node->next == NULL)
+		return (true);
+
+	void	*start = (void *)node;
+	return (is_large_enough(start, node->next, size + LL_NODE_SIZE + ALLOC_HEADER_SIZE));
 }
 
 void	*create_insert_alloc(t_list **insert, t_list *new, size_t size) {
