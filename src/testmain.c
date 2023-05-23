@@ -18,6 +18,15 @@ int	main(void) {
 	printf("large : %p\n", large);
 	ft_bzero(large, 4096);
 
+	void *tiny = malloc(16);
+	// third malloc in small region causes problem
+	// void *tiny2 = malloc(4);
+// causes infinite loop
+	// int i = 3;
+	// while (i--) {
+	// 	malloc(8);
+	// }
+
 	show_alloc_mem();
 
 	free(large);

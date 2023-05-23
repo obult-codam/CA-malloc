@@ -28,10 +28,10 @@ void	*create_insert_alloc(t_list **insert, t_list *new, size_t size) {
 	*insert = new;
 	new->next = tail_end;
 	
-	new->content = new + LL_NODE_SIZE;
+	new->content = ((void *)new) + LL_NODE_SIZE;
 	t_alloc_header	*new_alloc_header = new->content;
 	new_alloc_header->size = size;
-	return ((void *)new_alloc_header + ALLOC_HEADER_SIZE);
+	return (((void *)new_alloc_header) + ALLOC_HEADER_SIZE);
 }
 
 size_t	ll_and_alloc_size(t_list *node) {
@@ -52,17 +52,17 @@ void	*ll_create_alloc(t_zone_header *zone, size_t size) {
 	l_item = ft_lstfind_l(zone->alloc_head, &size, ll_next_has_space);
 	if (l_item == NULL) {
 		// return create alloc and save it on alloc_head
-		return create_insert_alloc(&zone->alloc_head, (t_list *)(zone + ZONE_HEADER_SIZE), size);
+		return create_insert_alloc(&zone->alloc_head, (t_list *)((void *)zone + ZONE_HEADER_SIZE), size);
 	}
 	else if (l_item->next == NULL) {
 		// check if there is enough space at tail
 		if (tail_not_enough_space(zone, l_item, size))
 			return (NULL);
 		// return NULL or add at tail and return create alloc and save on tail
-		return create_insert_alloc(&l_item->next, l_item + ll_and_alloc_size(l_item), size);
+		return create_insert_alloc(&l_item->next, (void *)l_item + ll_and_alloc_size(l_item), size);
 	}
 	else {
 		// add this alloc inbetween this and next alloc
-		return create_insert_alloc(&l_item->next, l_item + ll_and_alloc_size(l_item), size);
+		return create_insert_alloc(&l_item->next, (void *)l_item + ll_and_alloc_size(l_item), size);
 	}
 }

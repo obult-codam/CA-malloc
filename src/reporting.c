@@ -1,3 +1,5 @@
+#include <stdlib.h>
+
 void	double_free() {
 	// printf("double_free\n");
 	exit(2);
