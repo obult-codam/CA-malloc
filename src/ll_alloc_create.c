@@ -1,10 +1,8 @@
 #include "ft_malloc.h"
 
 bool	is_large_enough(void *begin, void *end, size_t requested_size) {
-	return ((end - begin - requested_size) >= 0);
+	return ((end - requested_size >= begin));
 }
-
-// 
 
 bool	ll_next_has_space(t_list *node, void *data) {
 	size_t	requested_size = *(size_t *)data;
@@ -12,6 +10,7 @@ bool	ll_next_has_space(t_list *node, void *data) {
 		return (true);
 	size_t	alloc_size = ((t_alloc_header *)node->content)->size;
 	void	*start = (void *)node + alloc_size + LL_NODE_SIZE + ALLOC_HEADER_SIZE;
+	// printf("b: %p e: %p s: %p\n", start, node->next, requested_size + LL_NODE_SIZE + ALLOC_HEADER_SIZE);
 	return (is_large_enough(start, node->next, requested_size + LL_NODE_SIZE + ALLOC_HEADER_SIZE));
 }
 
@@ -19,8 +18,7 @@ bool	ll_realoc_has_space(t_list *node, size_t size) {
 	if (node->next == NULL)
 		return (true);
 
-	void	*start = (void *)node;
-	return (is_large_enough(start, node->next, size + LL_NODE_SIZE + ALLOC_HEADER_SIZE));
+	return (is_large_enough((void *)node, (void *)node->next, size + LL_NODE_SIZE + ALLOC_HEADER_SIZE));
 }
 
 void	*create_insert_alloc(t_list **insert, t_list *new, size_t size) {
@@ -56,12 +54,14 @@ void	*ll_create_alloc(t_zone_header *zone, size_t size) {
 	}
 	else if (l_item->next == NULL) {
 		// check if there is enough space at tail
+		write(1, "ohh\n", 4);
 		if (tail_not_enough_space(zone, l_item, size))
 			return (NULL);
 		// return NULL or add at tail and return create alloc and save on tail
 		return create_insert_alloc(&l_item->next, (void *)l_item + ll_and_alloc_size(l_item), size);
 	}
 	else {
+		write(1, "noh\n", 4);
 		// add this alloc inbetween this and next alloc
 		return create_insert_alloc(&l_item->next, (void *)l_item + ll_and_alloc_size(l_item), size);
 	}

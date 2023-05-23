@@ -34,8 +34,9 @@ void	*malloc(size_t size) {	// possibly already malloc
 
 	// append zone to tail
 	ft_lstadd_back(&g_head, l_new_zone);
-
+	// need to add alloc too!!
 	// create allocation header
 	// return pointer to alocation
-	return (ll_create_alloc((t_zone_header *)l_new_zone->content, size));
+	void	*alloc = ll_create_alloc((t_zone_header *)l_new_zone->content, size);
+	return (alloc);
 }

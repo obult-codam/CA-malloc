@@ -51,9 +51,7 @@ static char	*ft_addington(char *og, char *add)
 static int		bufferfix(char *buff, int lenflag)
 {
 	char	*temp;
-	int		i;
 
-	i = 0;
 	temp = buff;
 	if (!lenflag)
 		buff[0] = 0;

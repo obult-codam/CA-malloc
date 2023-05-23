@@ -12,8 +12,8 @@ OBJ			= global_const malloc free show_alloc_mem \
 OBJS		= $(addsuffix .o, $(addprefix obj/, ${OBJ}))
 CC			= gcc
 RM			= rm -f
-HEADER		= -I lib/ 
-CFLAGS		= -fsanitize=address #-Wall -Wextra -Werror
+HEADER		= -I lib/ -I .
+CFLAGS		= #-fsanitize=address #-Wall -Wextra -Werror
 LIBFT		= Libft/libft.a
 
 
@@ -21,7 +21,7 @@ all:		${NAME}
 
 obj/%.o:	src/%.c
 				@mkdir -p $(dir $@)
-				$(CC) $(CFLAGS) $(RL_I) $(HEADER) -c -o $@ $<
+				$(CC) -fPIC $(CFLAGS) $(RL_I) $(HEADER) -c -o $@ $<
 
 clean:
 				@${RM} ${OBJS} \
@@ -38,6 +38,7 @@ ${NAME}:	${OBJS}
 				@${MAKE} bonus -C Libft --no-print-directory
 				@${CC} -shared $(OBJS) $(LIBFT) $(CFLAGS) -o $@
 				@ln -s ${NAME} ${SYMNAME}
+				@export LD_LIBRARY_PATH=$(pwd)
 				$(info ************  malloc Ready!)
 
 test:	${NAME}
