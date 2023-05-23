@@ -20,20 +20,23 @@ int	main(void) {
 
 	void *tiny = malloc(16);
 	// third malloc in small region causes problem
-	// void *tiny2 = malloc(4);
+	void *tiny2 = malloc(4);
+
+	// both pointers are the same resulting in an infinite linked list
+	printf("%p\n%p\n", tiny, tiny2);
 // causes infinite loop
 	// int i = 3;
 	// while (i--) {
 	// 	malloc(8);
 	// }
 
-	show_alloc_mem();
+	// show_alloc_mem();
 
 	free(large);
 	free(small);
 	printf("\n\n");
 
-	show_alloc_mem();
+	// show_alloc_mem();
 	// insert new blocks in right spot in LL
 
 	return (0);
