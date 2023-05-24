@@ -14,7 +14,7 @@ bool	ll_next_has_space(t_list *node, void *data) {
 	return (is_large_enough(start, node->next, requested_size + LL_NODE_SIZE + ALLOC_HEADER_SIZE));
 }
 
-bool	ll_realoc_has_space(t_list *node, size_t size) {
+bool	ll_realloc_has_space(t_list *node, size_t size) {
 	if (node->next == NULL)
 		return (true);
 

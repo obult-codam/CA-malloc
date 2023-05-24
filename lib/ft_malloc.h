@@ -51,7 +51,7 @@ void	pointer_not_allocated();
 t_list	**ll_find_alloc(void *ptr, t_list *l_zone);
 void	*ll_create_alloc(t_zone_header *zone, size_t size);
 void	ll_cleanup_alloc(void *ptr, t_list *l_zone);
-bool	ll_realoc_has_space(t_list *node, size_t size);
+bool	ll_realloc_has_space(t_list *node, size_t size);
 void	*ll_realloc(void *ptr, t_list *l_zone, size_t size);
 
 

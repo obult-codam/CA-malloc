@@ -1,13 +1,16 @@
+export LD_LIBRARY_PATH=$(pwd)
+
 ifeq ($(HOSTTYPE),)
 	HOSTTYPE := $(shell uname -m)_$(shell uname -s)
 endif
 NAME		= libft_malloc_${HOSTTYPE}.so
 SYMNAME 	:= libft_malloc.so
 TESTNAME	:= malloctest
-OBJ			= global_const malloc free show_alloc_mem \
+OBJ			= global_const malloc free show_alloc_mem realloc \
 				reporting \
 				zone_cleanup zone_create zone_find \
-				ll_alloc_cleanup ll_alloc_create ll_alloc_find
+				ll_alloc_cleanup ll_alloc_create ll_alloc_find \
+				ll_realloc
 
 OBJS		= $(addsuffix .o, $(addprefix obj/, ${OBJ}))
 CC			= gcc
@@ -38,7 +41,6 @@ ${NAME}:	${OBJS}
 				@${MAKE} bonus -C Libft --no-print-directory
 				@${CC} -shared $(OBJS) $(LIBFT) $(CFLAGS) -o $@
 				@ln -s ${NAME} ${SYMNAME}
-				@export LD_LIBRARY_PATH=$(pwd)
 				$(info ************  malloc Ready!)
 
 test:	${NAME}

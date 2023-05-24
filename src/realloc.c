@@ -2,7 +2,7 @@
 
 void	*realloc(void *ptr, size_t size) {
 	if (ptr == NULL)
-		return ;
+		return (NULL);
 
 	t_list	**pl_zone = find_zone_pl(ptr);
 

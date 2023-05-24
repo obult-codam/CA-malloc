@@ -1,6 +1,12 @@
 #include "ft_malloc.h"
 #include <stdint.h>
 
+size_t	min_sizet(size_t one, size_t two) {
+	if (one < two)
+		return one;
+	return two;
+}
+
 void	*ll_realloc(void *ptr, t_list *l_zone, size_t size) {
 	t_list	**pl_alloc = ll_find_alloc(ptr, l_zone);
 	t_alloc_header *alloc = (t_alloc_header *)(*pl_alloc)->content;
@@ -13,6 +19,6 @@ void	*ll_realloc(void *ptr, t_list *l_zone, size_t size) {
 
 	// need to move it to another place and copy the content then remove the current alloc
 	void	*new_zone = malloc(size);
-	ft_memcpy(new_zone, ptr, min(alloc->size, size));
+	ft_memcpy(new_zone, ptr, min_sizet(alloc->size, size));
 	free(ptr);
 }
