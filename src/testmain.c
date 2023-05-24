@@ -19,6 +19,8 @@ int	main(void) {
 	// printf("large : %p\n", malloc(2048));
 	// printf("large : %p\n", malloc(2048));
 
+	show_alloc_mem();
+	write(1, "\n", 1);
 	ptr = realloc(ptr, 4096);
 
 	// free(tofree);
