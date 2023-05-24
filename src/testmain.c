@@ -14,10 +14,12 @@ int	main(void) {
 
 	printf("large : %p\n", malloc(2048));
 	printf("large : %p\n", malloc(2048));
-	printf("large : %p\n", malloc(2048));
+	void *tofree = malloc(2048);
+	printf("large : %p\n", tofree);
 	printf("large : %p\n", malloc(2048));
 	printf("large : %p\n", malloc(2048));
 
+	free(tofree);
 	show_alloc_mem();
 	return (0);
 }
