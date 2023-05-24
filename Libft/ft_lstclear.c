@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "libft.h"
+#include <stdlib.h>
 
 /*
 **	Deletes and frees the given element and every

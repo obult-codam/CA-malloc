@@ -12,8 +12,8 @@ void	*realloc(void *ptr, size_t size) {
 	// call the realloc strategy
 	void	*pointer = ll_realloc(ptr, *pl_zone, size);
 
-	// check if the zone is empty and munmap()
-	cleanup_zone_check(pl_zone);
+	// check if the zone is empty and munmap() 
+	// cleanup_zone_check(pl_zone); already done by free
 
-	return pointer;
+	return (pointer);
 }

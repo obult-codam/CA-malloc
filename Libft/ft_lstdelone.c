@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "libft.h"
+#include <stdlib.h>
 
 /*
 **	Takes as a parameter an element and frees the
