@@ -10,7 +10,7 @@ void	free(void *ptr) {
 		pointer_not_allocated();
 		
 	// call the cleanup strategy
-	ll_cleanup_alloc(ptr, *pl_zone);
+	cleanup_alloc_strategy(ptr, *pl_zone);
 
 	// check if the zone is empty and munmap()
 	cleanup_zone_check(pl_zone);

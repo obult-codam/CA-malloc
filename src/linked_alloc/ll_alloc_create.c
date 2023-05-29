@@ -44,7 +44,7 @@ bool	tail_not_enough_space(t_zone_header *zone, t_list *prev, size_t size) {
 	return ((begin + size) > end);
 }
 
-void	*ll_create_alloc(t_zone_header *zone, size_t size) {
+void	*create_alloc_strategy(t_zone_header *zone, size_t size) {
 	t_list			*l_item;
 
 	l_item = ft_lstfind_l((t_list *)zone->alloc_head, &size, ll_next_has_space);

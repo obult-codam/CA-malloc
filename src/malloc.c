@@ -20,7 +20,7 @@ void	*malloc(size_t size) {	// possibly already malloc
 	// check if there is room free in an existing zone
 	l_tmp = find_zone_by_type(g_head, z_type);
 	while (l_tmp != NULL) {
-		void	*alloc = ll_create_alloc((t_zone_header *)l_tmp->content, size);
+		void	*alloc = create_alloc_strategy((t_zone_header *)l_tmp->content, size);
 		if (alloc != NULL)
 			return (alloc);
 		l_tmp = find_zone_by_type(l_tmp->next, z_type);
@@ -37,6 +37,6 @@ void	*malloc(size_t size) {	// possibly already malloc
 	// need to add alloc too!!
 	// create allocation header
 	// return pointer to alocation
-	void	*alloc = ll_create_alloc((t_zone_header *)l_new_zone->content, size);
+	void	*alloc = create_alloc_strategy((t_zone_header *)l_new_zone->content, size);
 	return (alloc);
 }
