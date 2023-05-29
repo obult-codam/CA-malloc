@@ -10,7 +10,7 @@ void	*realloc(void *ptr, size_t size) {
 		pointer_not_allocated();
 	
 	// call the realloc strategy
-	void	*pointer = ll_realloc(ptr, *pl_zone, size);
+	void	*pointer = realloc_strategy(ptr, *pl_zone, size);
 
 	// check if the zone is empty and munmap() 
 	// cleanup_zone_check(pl_zone); already done by free

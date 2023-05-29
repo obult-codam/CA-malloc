@@ -26,7 +26,7 @@ typedef enum e_zone_type {
 }	t_zone_type;
 
 typedef struct s_zone_header {
-	t_list		*alloc_head;
+	void		*alloc_head;
 	size_t		zone_size;
 	t_zone_type	zone_type;
 }	t_zone_header;
@@ -52,7 +52,7 @@ t_list	**ll_find_alloc(void *ptr, t_list *l_zone);
 void	*ll_create_alloc(t_zone_header *zone, size_t size);
 void	ll_cleanup_alloc(void *ptr, t_list *l_zone);
 bool	ll_realloc_has_space(t_list *node, size_t size);
-void	*ll_realloc(void *ptr, t_list *l_zone, size_t size);
+void	*realloc_strategy(void *ptr, t_list *l_zone, size_t size);
 
 
 // ### Public API ###

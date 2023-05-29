@@ -47,10 +47,10 @@ bool	tail_not_enough_space(t_zone_header *zone, t_list *prev, size_t size) {
 void	*ll_create_alloc(t_zone_header *zone, size_t size) {
 	t_list			*l_item;
 
-	l_item = ft_lstfind_l(zone->alloc_head, &size, ll_next_has_space);
+	l_item = ft_lstfind_l((t_list *)zone->alloc_head, &size, ll_next_has_space);
 	if (l_item == NULL) {
 		// return create alloc and save it on alloc_head
-		return create_insert_alloc(&zone->alloc_head, (t_list *)((void *)zone + ZONE_HEADER_SIZE), size);
+		return create_insert_alloc((t_list **)&zone->alloc_head, (t_list *)((void *)zone + ZONE_HEADER_SIZE), size);
 	}
 	else if (l_item->next == NULL) {
 		// check if there is enough space at tail

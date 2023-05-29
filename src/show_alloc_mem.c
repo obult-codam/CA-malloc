@@ -23,7 +23,8 @@ void	show_alloc_mem() {
 		print_zone_size(zone);
 
 		// go over and print all alocations (lstiter?)
-		ft_lstiter(zone->alloc_head, print_alloc_info);
+		// TODO: ad this to the strategy
+		ft_lstiter((t_list *)zone->alloc_head, print_alloc_info);
 
 		l_zone = l_zone->next;
 	}

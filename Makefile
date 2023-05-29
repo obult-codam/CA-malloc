@@ -1,26 +1,31 @@
 export LD_LIBRARY_PATH=$(pwd)
 
+ifndef STRATEGY
+	STRATEGY := linked_alloc
+endif
+
 ifeq ($(HOSTTYPE),)
 	HOSTTYPE := $(shell uname -m)_$(shell uname -s)
 endif
 NAME		= libft_malloc_${HOSTTYPE}.so
 SYMNAME 	:= libft_malloc.so
 TESTNAME	:= malloctest
+STRATEGY_OBJ = $(patsubst src/$(STRATEGY)%.c,obj/$(STRATEGY)%.o,$(wildcard src/$(STRATEGY)/*.c))
 OBJ			= global_const malloc free show_alloc_mem realloc \
 				reporting \
-				zone_cleanup zone_create zone_find \
-				ll_alloc_cleanup ll_alloc_create ll_alloc_find \
-				ll_realloc
+				zone_cleanup zone_create zone_find 
 
-OBJS		= $(addsuffix .o, $(addprefix obj/, ${OBJ}))
+OBJS		= $(addsuffix .o, $(addprefix obj/, ${OBJ})) ${STRATEGY_OBJ}
 CC			= gcc
 RM			= rm -f
 HEADER		= -I lib/ -I .
 CFLAGS		= #-fsanitize=address #-Wall -Wextra -Werror
 LIBFT		= Libft/libft.a
 
-
 all:		${NAME}
+
+echo:		
+			echo "${STRATEGY_OBJ}" && echo ${STRATEGY}
 
 obj/%.o:	src/%.c
 				@mkdir -p $(dir $@)
