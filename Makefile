@@ -18,7 +18,7 @@ OBJ			= global_const malloc free show_alloc_mem realloc \
 OBJS		= $(addsuffix .o, $(addprefix obj/, ${OBJ})) ${STRATEGY_OBJ}
 CC			= gcc
 RM			= rm -f
-HEADER		= -I lib/ -I .
+HEADER		= -I lib/ -I . -I ${STRATEGY}/
 CFLAGS		= #-fsanitize=address #-Wall -Wextra -Werror
 LIBFT		= Libft/libft.a
 
@@ -49,7 +49,7 @@ ${NAME}:	${OBJS}
 				$(info ************  malloc Ready!)
 
 test:	${NAME}
-	gcc src/testmain.c -L. ${SYMNAME} ${LIBFT} ${HEADER} -o ${TESTNAME}
+	gcc tests/testmain.c -L. ${SYMNAME} ${LIBFT} ${HEADER} -o ${TESTNAME}
 
 # fast test
 ft: re test

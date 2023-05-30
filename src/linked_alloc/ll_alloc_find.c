@@ -1,4 +1,5 @@
 #include "ft_malloc.h"
+#include "linked_alloc.h"
 
 bool	is_linked_alloc(t_list *l_alloc, void *ptr) {
 	return (ptr == (void *)l_alloc->content + ALLOC_HEADER_SIZE);

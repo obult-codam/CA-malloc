@@ -1,8 +1,6 @@
 #ifndef FT_MALLOC
 # define FT_MALLOC
 
-#pragma once
-
 # include <stddef.h>
 # include <unistd.h>
 # include <sys/mman.h>
@@ -46,12 +44,9 @@ t_list	**find_zone_pl(void *ptr);
 void	double_free();
 void	pointer_not_allocated();
 
-
-// 		# ll alloc management
-t_list	**ll_find_alloc(void *ptr, t_list *l_zone);
+// 		# Strategy API
 void	*create_alloc_strategy(t_zone_header *zone, size_t size);
 void	cleanup_alloc_strategy(void *ptr, t_list *l_zone);
-bool	ll_realloc_has_space(t_list *node, size_t size);
 void	*realloc_strategy(void *ptr, t_list *l_zone, size_t size);
 
 

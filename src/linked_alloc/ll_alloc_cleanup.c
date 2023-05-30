@@ -1,4 +1,5 @@
 #include "ft_malloc.h"
+#include "linked_alloc.h"
 
 // can make it return bool to call double free ethod in te free or realloc
 void	cleanup_alloc_strategy(void *ptr, t_list *l_zone) {

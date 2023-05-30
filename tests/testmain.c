@@ -25,5 +25,6 @@ int	main(void) {
 
 	// free(tofree);
 	show_alloc_mem();
+	printf("%lu\n", sizeof(t_zone_header));
 	return (0);
 }
