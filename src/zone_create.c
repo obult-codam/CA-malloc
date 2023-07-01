@@ -7,9 +7,9 @@ size_t	calculate_zone_size(t_zone_type z_type, size_t size) {
 	int		page_size = getpagesize();
 
 	if (z_type == LARGE)
-		zone_size = size + sizeof(t_list) + sizeof(t_alloc_header);
+		zone_size = size + sizeof(t_list) + alloc_header_size();
 	else
-		zone_size = MIN_ZONE_ALLOC * (zone_sizes[z_type] + sizeof(t_list) + sizeof(t_alloc_header));
+		zone_size = MIN_ZONE_ALLOC * (zone_sizes[z_type] + sizeof(t_list) + alloc_header_size());
 
 	// add space for t_list and zone_header
 	zone_size += sizeof(t_zone_header) + sizeof(t_list);
@@ -36,7 +36,7 @@ t_list	*create_zone(t_zone_type z_type, size_t alloc_size) {
 	t_list *list_header = (t_list *) mapped;
 	list_header->next = NULL;
 	// why use this as offset? then zone_header comes after list_header part
-	list_header->content = list_header + sizeof(*list_header);
+	list_header->content = (void *)list_header + sizeof(*list_header);
 
 	// initialize the mapped page with headers
 	t_zone_header	*header = (t_zone_header *)list_header->content;

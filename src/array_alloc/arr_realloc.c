@@ -1,0 +1,1 @@
+void	*realloc_strategy(void *ptr, t_list *l_zone, size_t size);

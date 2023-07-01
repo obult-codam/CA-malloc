@@ -31,7 +31,5 @@ t_list	*find_zone_by_type(t_list *start, t_zone_type z_type) {
 }
 
 t_list	**find_zone_pl(void *ptr) {
-	t_list	**pl_zone;
-
 	return ft_lstfind_pl(&g_head, ptr, is_inside_zone);
 }

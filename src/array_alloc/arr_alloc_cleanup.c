@@ -1,0 +1,1 @@
+void	cleanup_alloc_strategy(void *ptr, t_list *l_zone);

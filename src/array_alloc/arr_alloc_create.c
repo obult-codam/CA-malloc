@@ -1,0 +1,1 @@
+void	*create_alloc_strategy(t_zone_header *zone, size_t size);

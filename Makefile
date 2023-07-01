@@ -11,15 +11,19 @@ NAME		= libft_malloc_${HOSTTYPE}.so
 SYMNAME 	:= libft_malloc.so
 TESTNAME	:= malloctest
 STRATEGY_OBJ = $(patsubst src/$(STRATEGY)%.c,obj/$(STRATEGY)%.o,$(wildcard src/$(STRATEGY)/*.c))
-OBJ			= global_const malloc free show_alloc_mem realloc \
+OBJ			=	malloc free \
+				show_alloc_mem \
+				realloc \
 				reporting \
-				zone_cleanup zone_create zone_find 
+				zone_cleanup \
+				zone_create \
+				zone_find 
 
 OBJS		= $(addsuffix .o, $(addprefix obj/, ${OBJ})) ${STRATEGY_OBJ}
 CC			= gcc
 RM			= rm -f
 HEADER		= -I lib/ -I . -I ${STRATEGY}/
-CFLAGS		= #-fsanitize=address #-Wall -Wextra -Werror
+CFLAGS		= -fsanitize=address -g -Wall -Wextra -Werror
 LIBFT		= Libft/libft.a
 
 all:		${NAME}

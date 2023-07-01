@@ -1,6 +1,8 @@
 #include "ft_malloc.h"
 
-static t_zone_type	zone_is_type(size_t size) {
+t_list *g_head;
+
+t_zone_type	zone_is_type(size_t size) {
 	if (size <= TINY_SIZE)
 		return (TINY);
 	else if (size <= SMALL_SIZE)

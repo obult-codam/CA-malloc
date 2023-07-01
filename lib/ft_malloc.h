@@ -10,12 +10,9 @@
 
 # define TINY_SIZE 64
 # define SMALL_SIZE 512
-# define MIN_ZONE_ALLOC 100
+# define MIN_ZONE_ALLOC 128
 
 extern t_list *g_head;
-extern const size_t LL_NODE_SIZE;
-extern const size_t ZONE_HEADER_SIZE;
-extern const size_t ALLOC_HEADER_SIZE;
 
 typedef enum e_zone_type {
 	TINY,
@@ -29,9 +26,9 @@ typedef struct s_zone_header {
 	t_zone_type	zone_type;
 }	t_zone_header;
 
-typedef struct s_alloc_header {
-	size_t	size;
-}	t_alloc_header;
+#define LL_NODE_SIZE sizeof(t_list)
+#define ZONE_HEADER_SIZE sizeof(t_zone_header)
+
 
 // ### INTERNAL ###
 // 		# zone management
@@ -39,6 +36,10 @@ void	cleanup_zone_check(t_list **pl_zone);
 t_list	*create_zone(t_zone_type z_type, size_t alloc_size);
 t_list	*find_zone_by_type(t_list *start, t_zone_type z_type);
 t_list	**find_zone_pl(void *ptr);
+t_zone_type	zone_is_type(size_t size);
+
+// 		# extra sauce
+void	*out_of_zone_realloc(void *ptr, size_t prev_size, size_t new_size);
 
 // 		# reporting
 void	double_free();
@@ -48,7 +49,8 @@ void	pointer_not_allocated();
 void	*create_alloc_strategy(t_zone_header *zone, size_t size);
 void	cleanup_alloc_strategy(void *ptr, t_list *l_zone);
 void	*realloc_strategy(void *ptr, t_list *l_zone, size_t size);
-
+void	print_zone_info(void *alloc_head);
+size_t	alloc_header_size();
 
 // ### Public API ###
 void	show_alloc_mem();
