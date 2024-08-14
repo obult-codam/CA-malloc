@@ -7,9 +7,9 @@ size_t	calculate_zone_size(t_zone_type z_type, size_t size) {
 	int		page_size = getpagesize();
 
 	if (z_type == LARGE)
-		zone_size = size + sizeof(t_list) + alloc_header_size();
+		zone_size = ZONE_RESERVED_SIZE + calculate_required_size(size, 1);
 	else
-		zone_size = MIN_ZONE_ALLOC * (zone_sizes[z_type] + sizeof(t_list) + alloc_header_size());
+		zone_size = ZONE_RESERVED_SIZE + calculate_required_size(zone_sizes[z_type], MIN_ZONE_ALLOC);
 
 	// add space for t_list and zone_header
 	zone_size += sizeof(t_zone_header) + sizeof(t_list);

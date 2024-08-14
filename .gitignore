@@ -5,3 +5,5 @@ malloctest
 .vscode
 Libft/libft.a
 *.so
+.DS_Store
+*.log

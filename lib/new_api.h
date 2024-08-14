@@ -52,11 +52,6 @@ void *resize_alloc(void *head, void *ptr, size_t size);
 void print_info(void *head);
 
 /**
- * \brief Returns the size of the alloc header used for calculations in zone creation.
-*/
-size_t alloc_header_size();
-
-/**
  * TODO: Look into adding a single_alloc_zone creator Fn.
 */
 

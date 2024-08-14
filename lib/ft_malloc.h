@@ -16,7 +16,7 @@
 extern t_list *g_head;
 
 typedef enum e_zone_type {
-	TINY,
+	TINY = 0,
 	SMALL,
 	LARGE,
 }	t_zone_type;
@@ -29,6 +29,7 @@ typedef struct s_zone_header {
 
 #define LL_NODE_SIZE sizeof(t_list)
 #define ZONE_HEADER_SIZE sizeof(t_zone_header)
+#define ZONE_RESERVED_SIZE ZONE_HEADER_SIZE + LL_NODE_SIZE
 
 #define PTR_AFTER(object) ((void *)object + sizeof(*object))
 

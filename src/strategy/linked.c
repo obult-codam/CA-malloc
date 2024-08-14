@@ -2,14 +2,14 @@
 #include <libft.h>
 #include "ft_malloc.h"
 
-struct s_ll_zone_header {
-    size_t total_size;
-    t_list *head;
+struct s_alloc_header {
+    struct s_alloc_header *next;
+    size_t size;
 };
 
-struct s_alloc_header {
-    t_list *next;
-    size_t size;
+struct s_ll_zone_header {
+    size_t total_size;
+    struct s_alloc_header *head;
 };
 
 #define SIZE_ALLOC_HEADER sizeof(struct s_alloc_header)
@@ -32,7 +32,7 @@ struct s_alloc_header {
 size_t calculate_required_size(size_t alloc_size, size_t amount)
 {
     return (
-        (alloc_size + sizeof(t_list) + SIZE_ALLOC_HEADER) * amount
+        (alloc_size + SIZE_ALLOC_HEADER) * amount
         + sizeof(struct s_ll_zone_header)
     );
 }
@@ -51,11 +51,11 @@ void setup_zone(void *head, size_t max_alloc_size, size_t total_size)
 /* ----- Create alloc ----- */
 
 // Check create insert_alloc
-static void *add_alloc(t_list **list, size_t size)
+static void *add_alloc(struct s_alloc_header *alloc, size_t size, void *next)
 {
-
-
-    return NULL;
+    alloc->next = next;
+    alloc->size = size;
+    return (void *)alloc + SIZE_ALLOC_HEADER;
 }
 
 /**
@@ -73,19 +73,29 @@ void *create_alloc(void *head, size_t size)
     // check if the next node is NULL add it there if it is (first node).
     if (header->head == NULL) {
         header->head = &header[1];
-        return add_alloc(&header->head, size);
+        return add_alloc(header->head, size, NULL);
     }
 
     // check if there is a next node and  while there is evaluate if there is room inbetween.
-    t_list *tmp;
+    struct s_alloc_header *tmp;
     for (tmp = header->head; tmp != NULL; tmp = tmp->next) {
         // if last node check if there is enough room till the end according to header(-total_size).
         if (tmp->next == NULL) {
             break ;
         }
+        // is there size available inbetween nodes?
+        if ((size_t)tmp->next >= (size_t)tmp + tmp->size + size + 2*SIZE_ALLOC_HEADER) {
+            void *tmp_next = tmp->next;
+            tmp->next = (void*)tmp + SIZE_ALLOC_HEADER + tmp->size;
+            return add_alloc(tmp->next, size, tmp_next);
+        }
     }
     // check if there is enough room till the end according to header(-total_size).
-
+    if ((size_t)header + header->total_size >= (size_t)tmp + tmp->size + size + 2*SIZE_ALLOC_HEADER) {
+        tmp->next = (void *)tmp + tmp->size + SIZE_ALLOC_HEADER;
+        return add_alloc(tmp->next, size, NULL);
+    }
+    return NULL;
 }
 
 /**
@@ -94,11 +104,11 @@ void *create_alloc(void *head, size_t size)
 void cleanup_alloc(void *head, void *ptr)
 {
     struct s_ll_zone_header *header = head;
-    t_list *prev = header->head;
-    for (t_list *tmp = header->head; tmp != NULL; tmp = tmp->next) {
-        if (tmp->content == ptr) {
-            if (prev == header->head)
-                prev = tmp->next;
+    struct s_alloc_header *prev = NULL;
+    for (struct s_alloc_header *tmp = header->head; tmp != NULL; tmp = tmp->next) {
+        if ((void *)tmp + SIZE_ALLOC_HEADER == ptr) {
+            if (prev == NULL)
+                header->head = tmp->next;
             else
                 prev->next = tmp->next;
 
@@ -128,6 +138,26 @@ bool zone_is_empty(void *head)
 */
 void *resize_alloc(void *head, void *ptr, size_t size)
 {
+    struct s_ll_zone_header *header = head;
+    struct s_alloc_header *prev = NULL;
+    for (struct s_alloc_header *tmp = header->head; tmp != NULL; tmp = tmp->next) {
+        if ((void *)tmp + SIZE_ALLOC_HEADER == ptr) {
+            if (!tmp->next)
+            {
+                if ((void *)tmp + SIZE_ALLOC_HEADER + size < (void *)header + header->total_size) {
+                    tmp->size = size;
+                    return ptr;
+                }
+            }
+            else if ((void *)tmp + SIZE_ALLOC_HEADER + size < tmp->next)
+            {
+                tmp->size = size;
+                return ptr;
+            }
+            break;
+        }
+        prev = tmp;
+    }
     return NULL;
 }
 
@@ -137,14 +167,6 @@ void *resize_alloc(void *head, void *ptr, size_t size)
 void print_info(void *head)
 {
 
-}
-
-/**
- * \brief Returns the size of the alloc header used for calculations in zone creation.
-*/
-size_t alloc_header_size()
-{
-    return 0;
 }
 
 /**
