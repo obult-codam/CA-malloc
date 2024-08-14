@@ -16,3 +16,8 @@ void	print_zone_info(void *alloc_head)
 		return ;
 	ft_lstiter((t_list *)alloc_head, print_alloc_info);
 }
+
+void print_info(void *head)
+{
+	
+}

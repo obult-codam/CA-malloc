@@ -14,3 +14,8 @@ void	*realloc_strategy(void *ptr, t_list *l_zone, size_t size) {
 
 	return (out_of_zone_realloc(ptr, alloc->size, size));
 }
+
+void *resize_alloc(void *head, void *ptr, size_t size)
+{
+
+}

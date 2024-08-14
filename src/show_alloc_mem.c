@@ -18,7 +18,7 @@ void	show_alloc_mem() {
 		print_zone_size(zone);
 
 		// Strategy dependent
-		print_zone_info(zone->alloc_head);
+		print_info(zone->alloc_head);
 
 		l_zone = l_zone->next;
 	}

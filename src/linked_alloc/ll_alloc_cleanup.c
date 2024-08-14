@@ -11,3 +11,8 @@ void	cleanup_alloc_strategy(void *ptr, t_list *l_zone) {
 	// this is the free part
 	*pl_alloc = (*pl_alloc)->next;
 }
+
+void cleanup_alloc(void *head, void *ptr)
+{
+		
+}

@@ -23,9 +23,17 @@ void	*realloc(void *ptr, size_t size) {
 		pointer_not_allocated();
 
 	
-	// call the realloc strategy
-	if (((t_zone_header *)((*pl_zone)->content))->zone_type == zone_is_type(size))
-		return (realloc_strategy(ptr, *pl_zone, size));
+	/**
+	 * Call the realloc zone management api.
+	*/
+	void *realloc;
+	t_zone_header *zone_header = (*pl_zone)->content;
+	if (zone_header->zone_type == zone_is_type(size))
+	{
+		void *head = zone_header->alloc_head;
+		if (realloc = resize_alloc(head, ptr, size))
+			return realloc;
+	}
 
 	return (out_of_zone_realloc(ptr, size, size)); // inefficient because it will copy the total size of new alloc
 }

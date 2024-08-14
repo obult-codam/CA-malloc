@@ -7,6 +7,11 @@ typedef struct s_alloc_header {
 	size_t	size;
 }	t_alloc_header;
 
+struct s_head_info {
+	size_t zone_size;
+	t_list *list_head;
+};
+
 #define ALLOC_HEADER_SIZE sizeof(t_zone_header)
 
 // 		# ll alloc management

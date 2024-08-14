@@ -19,6 +19,16 @@ size_t	calculate_zone_size(t_zone_type z_type, size_t size) {
 	return zone_size;
 }
 
+size_t alloc_size_category(size_t size)
+{
+	if (size <= TINY_SIZE)
+		return TINY_SIZE;
+	else if (size <= SMALL_SIZE)
+		return SMALL_SIZE;
+	else
+		return size;
+}
+
 // create a zone which is requested by provide_zone
 t_list	*create_zone(t_zone_type z_type, size_t alloc_size) {
 	size_t	length;

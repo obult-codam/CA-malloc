@@ -5,6 +5,7 @@
 # include <unistd.h>
 # include <sys/mman.h>
 # include <stdbool.h>
+#include "new_api.h"
 
 # include "libft.h"
 
@@ -29,6 +30,8 @@ typedef struct s_zone_header {
 #define LL_NODE_SIZE sizeof(t_list)
 #define ZONE_HEADER_SIZE sizeof(t_zone_header)
 
+#define PTR_AFTER(object) ((void *)object + sizeof(*object))
+
 
 // ### INTERNAL ###
 // 		# zone management
@@ -37,6 +40,7 @@ t_list	*create_zone(t_zone_type z_type, size_t alloc_size);
 t_list	*find_zone_by_type(t_list *start, t_zone_type z_type);
 t_list	**find_zone_pl(void *ptr);
 t_zone_type	zone_is_type(size_t size);
+size_t	alloc_size_category(size_t size);
 
 // 		# extra sauce
 void	*out_of_zone_realloc(void *ptr, size_t prev_size, size_t new_size);
