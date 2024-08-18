@@ -1,5 +1,6 @@
 #include "ft_malloc.h"
 #include "new_api.h"
+#include <stdio.h>
 
 #define ZONE_REST_SIZE LL_NODE_SIZE + ZONE_HEADER_SIZE
 
@@ -41,6 +42,7 @@ void	*malloc(size_t size) {	// possibly already malloc
 	ft_lstadd_back(&g_head, l_new_zone);
 
 	t_zone_header *zone_header = l_new_zone->content;
+	zone_header->alloc_head = &zone_header[1];
 	void *head = zone_header->alloc_head;
 
 	// setup_zone (from api)

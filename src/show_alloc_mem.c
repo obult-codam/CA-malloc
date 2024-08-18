@@ -1,5 +1,4 @@
 #include "ft_malloc.h"
-#include "libft.h"
 #include <stdio.h>
 
 void	print_zone_size(t_zone_header *zone) {

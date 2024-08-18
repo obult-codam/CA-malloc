@@ -34,8 +34,10 @@ void	free(void *ptr) {
 		return ;
 
 	t_list	**pl_zone = find_zone_pl(ptr);
-	if (pl_zone == NULL)
+	if (pl_zone == NULL) {
 		pointer_not_allocated();
+		return;
+	}
 
 	t_zone_header *zone_header = (*pl_zone)->content;
 	void *head = zone_header->alloc_head;

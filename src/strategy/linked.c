@@ -1,5 +1,6 @@
 #include <stddef.h>
 #include <libft.h>
+#include <stdio.h>
 #include "ft_malloc.h"
 
 struct s_alloc_header {
@@ -72,7 +73,7 @@ void *create_alloc(void *head, size_t size)
 
     // check if the next node is NULL add it there if it is (first node).
     if (header->head == NULL) {
-        header->head = &header[1];
+        header->head = (void *)&header[1];
         return add_alloc(header->head, size, NULL);
     }
 
@@ -139,7 +140,6 @@ bool zone_is_empty(void *head)
 void *resize_alloc(void *head, void *ptr, size_t size)
 {
     struct s_ll_zone_header *header = head;
-    struct s_alloc_header *prev = NULL;
     for (struct s_alloc_header *tmp = header->head; tmp != NULL; tmp = tmp->next) {
         if ((void *)tmp + SIZE_ALLOC_HEADER == ptr) {
             if (!tmp->next)
@@ -149,14 +149,13 @@ void *resize_alloc(void *head, void *ptr, size_t size)
                     return ptr;
                 }
             }
-            else if ((void *)tmp + SIZE_ALLOC_HEADER + size < tmp->next)
+            else if ((void *)tmp + SIZE_ALLOC_HEADER + size < (void *)tmp->next)
             {
                 tmp->size = size;
                 return ptr;
             }
             break;
         }
-        prev = tmp;
     }
     return NULL;
 }
@@ -166,7 +165,8 @@ void *resize_alloc(void *head, void *ptr, size_t size)
 */
 void print_info(void *head)
 {
-
+    (void)head;
+    printf("need to make this work\n");
 }
 
 /**

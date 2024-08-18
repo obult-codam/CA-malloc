@@ -1,19 +1,11 @@
 #include <assert.h>
 #include "new_api.h"
 #include <stdlib.h>
-#include <stdio.h>
+
+#include "otest.h"
 
 #define MAX_ALLOCS 3
 #define MAX_ALLOC_SIZE 8
-
-#define TEST(result) do {                   \
-    if (result)                             \
-        printf("[\033[32mOK\033[0m]  ");    \
-    else                                    \
-        printf("[\033[31mKO\033[0m]  ");    \
-} while (0);
-
-#define MODULE(module_name) printf("\n%s :\n", module_name)
 
 int main(void)
 {
@@ -24,14 +16,14 @@ int main(void)
     size_t size;
 
     size = calculate_required_size(MAX_ALLOC_SIZE, MAX_ALLOCS);
-    printf("size == %u\n", size);
+    printf("size == %lu\n", size);
     TEST(size > MAX_ALLOCS * MAX_ALLOC_SIZE);
 
     /**
      * Test setup_zone()
      */
     // fake memory page
-    void *head = malloc(size);
+    void *head[4096];
     setup_zone(head, MAX_ALLOC_SIZE, size);
 
     /* Zone is empty. */

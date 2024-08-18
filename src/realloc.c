@@ -22,7 +22,7 @@ void	*realloc(void *ptr, size_t size) {
 	if (pl_zone == NULL)
 		pointer_not_allocated();
 
-	
+
 	/**
 	 * Call the realloc zone management api.
 	*/
@@ -31,7 +31,8 @@ void	*realloc(void *ptr, size_t size) {
 	if (zone_header->zone_type == zone_is_type(size))
 	{
 		void *head = zone_header->alloc_head;
-		if (realloc = resize_alloc(head, ptr, size))
+		realloc = resize_alloc(head, ptr, size);
+		if (realloc != NULL)
 			return realloc;
 	}
 
