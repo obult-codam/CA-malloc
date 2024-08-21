@@ -39,17 +39,14 @@ bool check_last_of_type(t_zone_type type)
 
 // implemented for Linked-list strategy only
 void	free(void *ptr) {
-    printf("free called %p\n", ptr);
 	if (ptr == NULL)
 		return ;
 
 	t_list	**pl_zone = find_zone_pl(ptr);
 	if (pl_zone == NULL || *pl_zone == NULL) {
-		pointer_not_allocated();
+		pointer_not_allocated(ptr);
         return;
     }
-
-    printf("pl_zone %p || %p\n", pl_zone, *pl_zone);
 
 	t_zone_header *zone_header = (*pl_zone)->content;
 	void *head = zone_header->alloc_head;
@@ -61,9 +58,13 @@ void	free(void *ptr) {
 	if (!zone_is_empty(head))
 		return;
 
-	if (zone_header->zone_type == LARGE) {
+	if (zone_header->zone_type == LARGE)
+	{
 		cleanup_zone(pl_zone, zone_header->zone_size);
-	} else if (!check_last_of_type(zone_header->zone_type)) {
+	}
+	else if
+	(!check_last_of_type(zone_header->zone_type))
+	{
 		cleanup_zone(pl_zone, zone_header->zone_size);
 	}
 }
@@ -95,7 +96,6 @@ void	*malloc(size_t size) {	// possibly already malloc
 	while (l_tmp != NULL) {
 		void *alloc = create_alloc(((t_zone_header *)l_tmp->content)->alloc_head, size);
 		if (alloc != NULL) {
-            printf("malloc called %p\n", alloc);
 			return (alloc);
         }
 		l_tmp = find_zone_by_type(l_tmp->next, z_type);
@@ -105,8 +105,7 @@ void	*malloc(size_t size) {	// possibly already malloc
 	// large zones are always created here
 	t_list	*l_new_zone = create_zone(z_type, size);
 	if (l_new_zone == NULL) {
-        printf("malloc called %p\n", NULL);
-		return (NULL);
+		return (NULL); // LCOV_EXCL_LINE
     }
 
 	// append zone to tail
@@ -117,12 +116,11 @@ void	*malloc(size_t size) {	// possibly already malloc
 	void *head = zone_header->alloc_head;
 
 	// setup_zone (from api)
-	setup_zone(head, alloc_size_category(z_type), zone_header->zone_size - ZONE_REST_SIZE);
+	setup_zone(head, alloc_size_category(size), zone_header->zone_size - ZONE_REST_SIZE);
 
 	// create_alloc (from api)
 	void *alloc = create_alloc(head, size);
 
-    printf("malloc called %p\n", alloc);
 	return (alloc);
 }
 
@@ -149,8 +147,10 @@ void	*realloc(void *ptr, size_t size) {
 
 	t_list	**pl_zone = find_zone_pl(ptr);
 
-	if (pl_zone == NULL)
-		pointer_not_allocated();
+	if (pl_zone == NULL) {
+		pointer_not_allocated(ptr);
+		return NULL;
+	}
 
 
 	/**
@@ -158,28 +158,31 @@ void	*realloc(void *ptr, size_t size) {
 	*/
 	void *realloc;
 	t_zone_header *zone_header = (*pl_zone)->content;
+	void *head = zone_header->alloc_head;
 	if (zone_header->zone_type == zone_is_type(size))
 	{
-		void *head = zone_header->alloc_head;
 		realloc = resize_alloc(head, ptr, size);
 		if (realloc != NULL)
 			return realloc;
 	}
 
-	return (out_of_zone_realloc(ptr, size, size)); // inefficient because it will copy the total size of new alloc
+	uint32_t old_size = get_alloc_size(head, ptr);
+
+	return (out_of_zone_realloc(ptr, old_size, size)); // inefficient because it will copy the total size of new alloc
 }
 
 /**
  * REPORTING
  */
 
-void	double_free() {
-	// printf("double_free\n");
-	// exit(2);
-}
+// no detection
+// void	double_free() {
+// 	printf("double_free\n");
+// 	// exit(2);
+// }
 
-void	pointer_not_allocated() {
-	// printf("pointer_not_allocated\n");
+void	pointer_not_allocated(void *ptr) {
+	printf("pointer_not_allocated: %p\n", ptr);
 	// exit(1);
 }
 
@@ -253,7 +256,7 @@ t_list	*create_zone(t_zone_type z_type, size_t alloc_size) {
 	mapped = mmap(NULL, length, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
 	//  check for failures
 	if (mapped == MAP_FAILED)
-		return NULL;
+		return NULL; // LCOV_EXCL_LINE
 
 	// add a list object at the top?
 	t_list *list_header = (t_list *) mapped;

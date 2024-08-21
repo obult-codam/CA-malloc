@@ -11,7 +11,7 @@
 
 # define TINY_SIZE 64
 # define SMALL_SIZE 512
-# define MIN_ZONE_ALLOC 128
+# define MIN_ZONE_ALLOC 8
 
 extern t_list *g_head;
 
@@ -47,8 +47,8 @@ size_t	alloc_size_category(size_t size);
 void	*out_of_zone_realloc(void *ptr, size_t prev_size, size_t new_size);
 
 // 		# reporting
-void	double_free();
-void	pointer_not_allocated();
+void	double_free(); // move internally in file.
+void	pointer_not_allocated(void *ptr); // move internally in file.
 
 // 		# Strategy API
 void	*create_alloc_strategy(t_zone_header *zone, size_t size);

@@ -124,7 +124,8 @@ void cleanup_alloc(void *head, void *ptr)
 */
 bool zone_is_empty(void *head)
 {
-    return (((struct s_ll_zone_header *)head)->head == NULL);
+    bool is_empty = (((struct s_ll_zone_header *)head)->head == NULL);
+    return (is_empty);
 }
 
 /**
@@ -156,7 +157,7 @@ void *resize_alloc(void *head, void *ptr, size_t size)
             }
             break;
         }
-    }
+    } // LCOV_EXCL_LINE
     return NULL;
 }
 
@@ -169,11 +170,18 @@ void print_info(void *head)
     printf("need to make this work\n");
 }
 
-/**
- * TODO: Look into adding a single_alloc_zone creator Fn.
-*/
+size_t get_alloc_size(void *head, void *ptr)
+{
+    // should make a find function instead.
+    struct s_ll_zone_header *header = head;
+    for (struct s_alloc_header *tmp = header->head; tmp != NULL; tmp = tmp->next) {
+        if ((void *)tmp + SIZE_ALLOC_HEADER == ptr) {
+            return tmp->size;
+        }
+    }
+    return 0; // LCOV_EXCL_LINE
+}
 
 /**
- * Because of the 42 print function requirement we have to keep track of exact alloc sizes.
- * This could be leveraged to create a function which can return how many bytes are alloced for a pointer.
+ * TODO: Look into adding a single_alloc_zone creator Fn.
 */

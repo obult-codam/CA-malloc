@@ -55,6 +55,9 @@ void print_info(void *head);
  * TODO: Look into adding a single_alloc_zone creator Fn.
 */
 
+/* needed for getting the size for a out of zone realloc (need to know how much to copy) */
+size_t get_alloc_size(void *head, void *ptr);
+
 /**
  * Because of the 42 print function requirement we have to keep track of exact alloc sizes.
  * This could be leveraged to create a function which can return how many bytes are alloced for a pointer.

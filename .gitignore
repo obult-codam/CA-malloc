@@ -9,3 +9,4 @@ Libft/libft.a
 *.log
 *.gcda
 *.gcno
+*.profraw

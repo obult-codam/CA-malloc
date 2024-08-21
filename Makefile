@@ -1,7 +1,7 @@
 export LD_LIBRARY_PATH=$(pwd)
 
 ifndef STRATEGY
-	STRATEGY := strategy
+	STRATEGY := linked
 endif
 
 ifeq ($(HOSTTYPE),)
@@ -9,19 +9,15 @@ ifeq ($(HOSTTYPE),)
 endif
 NAME		= libft_malloc_${HOSTTYPE}.so
 SYMNAME 	:= libft_malloc.so
-STRATEGY_OBJ = $(patsubst src/$(STRATEGY)%.c,obj/$(STRATEGY)%.o,$(wildcard src/$(STRATEGY)/*.c))
-OBJ			=	malloc free \
-				show_alloc_mem \
-				realloc \
-				reporting \
-				zone_create \
-				zone_find
+SRC			= src/core.c
+SRC			+= src/strategy/${STRATEGY}.c
 
-OBJS		= $(addsuffix .o, $(addprefix obj/, ${OBJ})) ${STRATEGY_OBJ}
+OBJS		= $(patsubst src/%.c, obj/%.o, $(SRC))
+GCDANO		= $(OBJS:.o=.gcda) $(OBJS:.o=.gcno)
 CC			= clang
 RM			= rm -rf
 HEADER		= -I lib/ -I . -I ${STRATEGY}/
-CFLAGS		= -g -Wall -Wextra -Werror --coverage
+CFLAGS		= -g -Wall -Wextra -Werror --coverage -O0
 LIBFT		= Libft/libft.a
 
 all:		${NAME}
@@ -31,14 +27,16 @@ obj/%.o:	src/%.c
 				$(CC) -fPIC $(CFLAGS) $(HEADER) -c -o $@ $<
 
 clean:
-				@${RM} ${OBJS} \
+				@${RM} ${OBJS} ${GCDANO}
 				$(info ************  malloc Clean)
 
 fclean:		clean
-				@${MAKE} fclean -C Libft --no-print-directory 2>&1 > /dev/null
-				@${RM} src/*.o obj/*
+				@${RM} ${OBJS}
 				@${RM} ${NAME} ${SYMNAME} ${TESTNAME}
 				$(info ************  malloc Removed)
+
+clean_lib:
+				@${MAKE} fclean -C Libft --no-print-directory 2>&1 > /dev/null
 
 re:			fclean all
 
