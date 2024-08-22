@@ -96,8 +96,8 @@ int main(void)
 
     cleanup_alloc(head, normal_ptr1);
     void *realloc_ptr5;
-    realloc_ptr5 = resize_alloc(head, realloc_ptr2, 16); // illegal but not this functions task to check that.
-    TEST(realloc_ptr2 == realloc_ptr5);
+    realloc_ptr5 = resize_alloc(head, realloc_ptr1, 8);
+    TEST(realloc_ptr1 == realloc_ptr5);
 
     printf("\nEND tests!\n");
     return 0;

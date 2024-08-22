@@ -167,6 +167,8 @@ void	*realloc(void *ptr, size_t size) {
 	}
 
 	uint32_t old_size = get_alloc_size(head, ptr);
+	if (old_size == 0)
+		return NULL; // allow2s for some exotic variants.
 
 	return (out_of_zone_realloc(ptr, old_size, size)); // inefficient because it will copy the total size of new alloc
 }

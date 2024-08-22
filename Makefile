@@ -1,7 +1,7 @@
 export LD_LIBRARY_PATH=$(pwd)
 
 ifndef STRATEGY
-	STRATEGY := linked
+	STRATEGY := array
 endif
 
 ifeq ($(HOSTTYPE),)

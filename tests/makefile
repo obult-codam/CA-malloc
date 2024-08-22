@@ -6,7 +6,7 @@ LIBFT = ../Libft/libft.a
 OB_STRAT_DIR = ../obj/strategy
 
 # Unit tests
-STRATEGY = linked
+STRATEGY = array
 UTEST = unittest
 UTEST_TST = unit_tests.o
 UTEST_SRCS = ../src/strategy/${STRATEGY}.c
