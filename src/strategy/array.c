@@ -4,7 +4,7 @@
 
 struct s_array_header {
 	size_t	alloc_amount;
-    size_t max_size;
+    size_t  max_size;
 	size_t	*size_in_use;	// array containing the size of the alloc
 	void	*allocs;		// array containing the alloc
 };
