@@ -28,6 +28,7 @@ size_t calculate_required_size(size_t alloc_size, size_t amount)
 void setup_zone(void *head, size_t max_alloc_size, size_t total_size)
 {
     struct s_yolo_header *header = head;
+    (void)max_alloc_size;
 
     header->alloc_count = 0;
     header->next_alloc = (void *)(&header[1]);
@@ -47,8 +48,9 @@ void *create_alloc(void *head, size_t size)
     struct s_yolo_header *header = head;
     void *ptr;
 
-    if (header->next_alloc + size > head + header->total_size)
+    if ((header->next_alloc + size) > (head + header->total_size))
         return NULL;
+
     header->alloc_count++;
     ptr = header->next_alloc;
     header->next_alloc += size;
@@ -63,6 +65,9 @@ void *create_alloc(void *head, size_t size)
 void cleanup_alloc(void *head, void *ptr)
 {
     struct s_yolo_header *header = head;
+
+    if (ptr > head + header->total_size || ptr < head)
+        return;
 
     header->alloc_count--;
 }
@@ -88,6 +93,9 @@ bool zone_is_empty(void *head)
 */
 void *resize_alloc(void *head, void *ptr, size_t size)
 {
+    (void)head;
+    (void)ptr;
+    (void)size;
     return NULL;
 }
 
@@ -96,6 +104,7 @@ void *resize_alloc(void *head, void *ptr, size_t size)
 */
 void print_info(void *head)
 {
+    (void)head;
     printf("YOLO\n");
 }
 
@@ -106,7 +115,9 @@ void print_info(void *head)
 /* needed for getting the size for a out of zone realloc (need to know how much to copy) */
 size_t get_alloc_size(void *head, void *ptr)
 {
-    return NULL;
+    (void)head;
+    (void)ptr;
+    return 0;
 }
 
 /**

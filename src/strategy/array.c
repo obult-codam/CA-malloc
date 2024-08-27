@@ -121,7 +121,7 @@ void print_info(void *head)
             continue;
 
         void *start = header->allocs + (header->max_size * i);
-        printf("%p - %p : %lu bytes\n", start, start + header->size_in_use[i], header->size_in_use[i]);
+        fprintf(stderr, "%p - %p : %lu bytes\n", start, start + header->size_in_use[i], header->size_in_use[i]);
     }
 }
 

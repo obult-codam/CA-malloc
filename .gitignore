@@ -10,3 +10,4 @@ Libft/libft.a
 *.gcda
 *.gcno
 *.profraw
+temp

@@ -166,8 +166,16 @@ void *resize_alloc(void *head, void *ptr, size_t size)
 */
 void print_info(void *head)
 {
-    (void)head;
-    printf("need to make this work\n");
+    struct s_ll_zone_header *header = head;
+    struct s_alloc_header *node = header->head;
+
+    while (node != NULL)
+    {
+        void *start = (void *)(&node[1]);
+        fprintf(stderr, "%p - %p : %lu bytes\n", start, start + node->size, node->size);
+
+        node = node->next;
+    }
 }
 
 size_t get_alloc_size(void *head, void *ptr)

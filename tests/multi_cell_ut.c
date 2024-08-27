@@ -6,6 +6,9 @@
 
 #define MAX_ALLOCS 3
 #define MAX_ALLOC_SIZE 8
+#define CELL_SIZE 128
+
+void print_debug(void *head);
 
 int main(void)
 {
@@ -22,7 +25,7 @@ int main(void)
      * Test setup_zone()
      */
     // fake memory page
-    void *head[4096];
+    void *head[16384];
     setup_zone(head, MAX_ALLOC_SIZE, size);
 
     /* Zone is empty. */
@@ -75,6 +78,10 @@ int main(void)
     MODULE("Realloc");
 
     void *realloc_ptr1;
+
+    realloc_ptr1 = resize_alloc(head, NULL, CELL_SIZE * 8 + 42);
+    TEST(realloc_ptr1 == NULL);
+
     void *realloc_ptr2;
     realloc_ptr1 = create_alloc(head, 2);
     realloc_ptr2 = resize_alloc(head, realloc_ptr1, 8);
@@ -100,6 +107,43 @@ int main(void)
     void *realloc_ptr5;
     realloc_ptr5 = resize_alloc(head, realloc_ptr1, 8);
     TEST(realloc_ptr1 == realloc_ptr5);
+
+    MODULE("Special realoc case");
+
+    setup_zone(head, CELL_SIZE * 16, CELL_SIZE * 12);
+    void *cpt1, *cpt2;
+    cpt1 = create_alloc(head, CELL_SIZE * 8);
+    TEST(cpt1 != NULL);
+    cpt2 = create_alloc(head, CELL_SIZE * 4);
+    TEST(cpt2 == NULL);
+    print_debug(head);
+
+    setup_zone(head, CELL_SIZE * 16, 16384);
+
+    void *srcp = create_alloc(head, CELL_SIZE * 8);
+    void *resized;
+    TEST(srcp != NULL);
+
+    resized = resize_alloc(head, srcp, CELL_SIZE * 8 + 42);
+    TEST(resized == srcp);
+
+    resized = resize_alloc(head, srcp, CELL_SIZE * 16);
+    TEST(resized == srcp);
+
+    setup_zone(head, CELL_SIZE * 12, CELL_SIZE * 32);
+    void *pt1, *pt2, *pt3, *pt4;
+    pt1 = create_alloc(head, CELL_SIZE * 5);
+    pt2 = create_alloc(head, CELL_SIZE * 5);
+    pt3 = create_alloc(head, CELL_SIZE * 5);
+    print_debug(head);
+    cleanup_alloc(head, pt2);
+    print_debug(head);
+
+    pt2 = create_alloc(head, CELL_SIZE * 8);
+    cleanup_alloc(head, pt2);
+    pt4 = resize_alloc(head, pt1, CELL_SIZE * 11);
+    TEST(pt4 == NULL);
+    print_debug(head);
 
     fprintf(stderr, "\nEND tests!\n");
     return 0;

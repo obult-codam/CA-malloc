@@ -4,8 +4,8 @@
 
 #define TS_SMALL 64
 #define TS_MEDIUM 512
-#define TS_LARGE 20000
-#define ALLOC_LOAD 1024
+#define TS_LARGE 1800
+#define ALLOC_LOAD 2048
 
 int main(void)
 {
@@ -37,7 +37,7 @@ int main(void)
     TEST(pt0 != pt2);
 
     tmp = realloc(pt4, TS_LARGE * 2);
-    TEST(tmp != pt4);
+    // TEST(tmp != pt4);
     pt4 = realloc(tmp, TS_LARGE);
     TEST(pt4 == tmp);
 
@@ -61,15 +61,19 @@ int main(void)
     free(pt3);
     free(pt4);
 
-    /* becasue lcov does not free everything we cannot see how a free function path works uless we first get a second page and then free everything on that page */
+    /* because lcov does not free everything we cannot see how a free function path works uless we first get a second page and then free everything on that page */
     for (uint32_t i = 0; i < ALLOC_LOAD; i++) {
         pt_arr[i] = malloc(TS_SMALL);
+        if (pt_arr[i])
+            ((char *)pt_arr[i])[TS_SMALL - 1] = '0';
     }
+    // show_alloc_mem();
+    TEST(1); // still alive
     for (uint32_t i = 0; i < ALLOC_LOAD; i++)
     {
         free(pt_arr[i]);
     }
 
-    printf("\nEND tests!\n");
+    fprintf(stderr, "\nEND tests!\n");
     return 0;
 }

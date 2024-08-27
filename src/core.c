@@ -2,7 +2,7 @@
 #include "new_api.h"
 #include <stdio.h>
 
-#define ZONE_REST_SIZE LL_NODE_SIZE + ZONE_HEADER_SIZE
+#define ZONE_REST_SIZE (LL_NODE_SIZE + ZONE_HEADER_SIZE)
 /* Global starting point for mem map */
 t_list *g_head;
 
@@ -96,7 +96,7 @@ void	*malloc(size_t size) {	// possibly already malloc
 	while (l_tmp != NULL) {
 		void *alloc = create_alloc(((t_zone_header *)l_tmp->content)->alloc_head, size);
 		if (alloc != NULL) {
-			return (alloc);
+			return alloc;
         }
 		l_tmp = find_zone_by_type(l_tmp->next, z_type);
 	}
@@ -128,15 +128,11 @@ void	*malloc(size_t size) {	// possibly already malloc
  * REALLOC
  */
 
-size_t	min_sizet(size_t one, size_t two) {
-	if (one < two)
-		return one;
-	return two;
-}
+#define MIN(a, b) (a < b ? a : b)
 
 void	*out_of_zone_realloc(void *ptr, size_t prev_size, size_t new_size) {
 	void	*new_alloc = malloc(new_size);
-	ft_memcpy(new_alloc, ptr, min_sizet(prev_size, new_size));
+	ft_memcpy(new_alloc, ptr, MIN(prev_size, new_size));
 	free(ptr);
 	return (new_alloc);
 }
@@ -184,8 +180,7 @@ void	*realloc(void *ptr, size_t size) {
 // }
 
 void	pointer_not_allocated(void *ptr) {
-	printf("pointer_not_allocated: %p\n", ptr);
-	// exit(1);
+	fprintf(stderr, "pointer_not_allocated: %p\n", ptr);
 }
 
 /**
@@ -194,13 +189,13 @@ void	pointer_not_allocated(void *ptr) {
 
 void	print_zone_size(t_zone_header *zone) {
 	char *zones_as_string[] = { "TINY: ", "SMALL:", "LARGE:" };
-	printf("%s : %p size: %lu\n", zones_as_string[zone->zone_type], zone - LL_NODE_SIZE, zone->zone_size);
+	fprintf(stderr, "%s : %p size: %lu\n", zones_as_string[zone->zone_type], zone - LL_NODE_SIZE, zone->zone_size);
 }
 
 void	show_alloc_mem() {
 	t_list *l_zone = g_head;
 
-	printf("----------------\n");
+	fprintf(stderr, "----------------\n");
 
 	while (l_zone) {
 		t_zone_header *zone = (t_zone_header *)l_zone->content;
