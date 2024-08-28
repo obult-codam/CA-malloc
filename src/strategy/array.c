@@ -24,11 +24,13 @@ size_t calculate_required_size(size_t alloc_size, size_t amount)
 void setup_zone(void *head, size_t max_alloc_size, size_t total_size)
 {
     struct s_array_header *header = head;
-    header->alloc_amount = (total_size - sizeof(struct s_array_header)) / (max_alloc_size + sizeof(*header->size_in_use));
+    header->alloc_amount = (total_size - sizeof(struct s_array_header)) / (max_alloc_size + sizeof(*(header->size_in_use)));
 
     header->max_size = max_alloc_size;
     header->size_in_use = (void *)(&header[1]);
     header->allocs = (void *)(&header->size_in_use[header->alloc_amount]);
+    if (max_alloc_size < 4096)
+        header->allocs += (max_alloc_size - ((size_t)header->allocs % max_alloc_size)) % max_alloc_size;
 
     for (size_t i = 0; i < header->alloc_amount; i++) {
         header->size_in_use[i] = 0;

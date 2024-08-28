@@ -37,9 +37,10 @@ void setup_zone(void *head, size_t max_alloc_size, size_t total_size)
 
     header->alloc_amount = (total_size - sizeof(*header)) / (MAX(max_alloc_size + cif, CELL_SIZE + cif));
     header->max_size = max_alloc_size;
-    header->total_cells = (total_size - sizeof(*header)) / (CELL_SIZE + cif);
+    header->total_cells = (total_size - sizeof(*header)) / (CELL_SIZE + sizeof(uint8_t));
     header->size_in_use = (void *)(&header[1]);
     header->allocs = (void *)(&header->size_in_use[header->total_cells]);
+    header->allocs += (CELL_SIZE - ((size_t)header->allocs % CELL_SIZE)) % CELL_SIZE;
 
     // probably redundant because of empy pages.
     for (size_t i =0; i < header->total_cells; i++) {
