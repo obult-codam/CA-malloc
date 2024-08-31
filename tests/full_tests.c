@@ -37,7 +37,6 @@ int main(void)
     TEST(pt0 != pt2);
 
     tmp = realloc(pt4, TS_LARGE * 2);
-    // TEST(tmp != pt4);
     pt4 = realloc(tmp, TS_LARGE);
     TEST(pt4 == tmp);
 

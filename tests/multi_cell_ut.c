@@ -49,6 +49,7 @@ int main(void)
     pointer3 = create_alloc(head, 8);
     TEST(pointer3 != NULL);
     pointer3[7] = '1'; // last addresable byte in the page.
+    print_debug(head);
 
     // this should return NULL
     void *pointer4;

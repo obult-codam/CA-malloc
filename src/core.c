@@ -1,9 +1,13 @@
 #include "ft_malloc.h"
 #include "new_api.h"
+#include "large_alloc.h"
 #include <stdio.h>
 
 #define ZONE_REST_SIZE (LL_NODE_SIZE + ZONE_HEADER_SIZE)
+
 /* Global starting point for mem map */
+/* This variables visibility is hidden to make sure other users of the shared library do not use the same data for their allocations. */
+__attribute__((visibility("hidden")))
 t_list *g_head;
 
 /**
@@ -52,18 +56,21 @@ void	free(void *ptr) {
 	void *head = zone_header->alloc_head;
 
 	// call the cleanup strategy
+	if (zone_header->zone_type == LARGE) {
+		if (not_this_large_alloc(zone_header->alloc_head, ptr))
+			return;
+
+		cleanup_zone(pl_zone, zone_header->zone_size);
+		return;
+	}
+
 	cleanup_alloc(head, ptr);
 
 	/* Check that the zone is still in use. */
 	if (!zone_is_empty(head))
 		return;
 
-	if (zone_header->zone_type == LARGE)
-	{
-		cleanup_zone(pl_zone, zone_header->zone_size);
-	}
-	else if
-	(!check_last_of_type(zone_header->zone_type))
+	if (!check_last_of_type(zone_header->zone_type))
 	{
 		cleanup_zone(pl_zone, zone_header->zone_size);
 	}
@@ -81,6 +88,25 @@ t_zone_type	zone_is_type(size_t size) {
 	return (LARGE);
 }
 
+void *handle_large_zone(size_t size)
+{
+	t_list	*l_new_zone = create_zone(LARGE, size);
+	if (l_new_zone == NULL) {
+		return (NULL); // LCOV_EXCL_LINE
+    }
+
+	// append zone to tail
+	ft_lstadd_back(&g_head, l_new_zone);
+
+	t_zone_header *zone_header = l_new_zone->content;
+	zone_header->alloc_head = &zone_header[1];
+	void *head = zone_header->alloc_head;
+
+	// setup_zone (from api)
+	setup_large(head, zone_header->zone_size - ZONE_REST_SIZE);
+	return create_large_alloc(zone_header->alloc_head, size);
+}
+
 // use find_zone to find a suitable zone else use create_zone to create one,
 // when that fails return NULL
 void	*malloc(size_t size) {	// possibly already malloc
@@ -89,8 +115,8 @@ void	*malloc(size_t size) {	// possibly already malloc
 
 
 	// create zone directly and append to tail for LARGE zone
-	// if (z_type == LARGE)
-	// 	return handle_large_zone(size);
+	if (z_type == LARGE)
+		return handle_large_zone(size);
 	// check if there is room free in an existing zone
 	l_tmp = find_zone_by_type(g_head, z_type);
 	while (l_tmp != NULL) {
@@ -148,7 +174,6 @@ void	*realloc(void *ptr, size_t size) {
 		return NULL;
 	}
 
-
 	/**
 	 * Call the realloc zone management api.
 	*/
@@ -157,12 +182,19 @@ void	*realloc(void *ptr, size_t size) {
 	void *head = zone_header->alloc_head;
 	if (zone_header->zone_type == zone_is_type(size))
 	{
-		realloc = resize_alloc(head, ptr, size);
+		if (zone_header->zone_type == LARGE)
+			realloc = resize_large_alloc(head, ptr, size);
+		else
+			realloc = resize_alloc(head, ptr, size);
 		if (realloc != NULL)
 			return realloc;
 	}
 
-	uint32_t old_size = get_alloc_size(head, ptr);
+	uint32_t old_size;
+	if (zone_header->zone_type == LARGE)
+		old_size = get_large_alloc_size(head, ptr);
+	else
+		old_size = get_alloc_size(head, ptr);
 	if (old_size == 0)
 		return NULL; // allow2s for some exotic variants.
 
@@ -203,7 +235,10 @@ void	show_alloc_mem() {
 		print_zone_size(zone);
 
 		// Strategy dependent
-		print_info(zone->alloc_head);
+		if (zone->zone_type == LARGE)
+			printf_large_info(zone->alloc_head);
+		else
+			print_info(zone->alloc_head);
 
 		l_zone = l_zone->next;
 	}
@@ -220,7 +255,7 @@ size_t	calculate_zone_size(t_zone_type z_type, size_t size) {
 	int		page_size = getpagesize();
 
 	if (z_type == LARGE)
-		zone_size = ZONE_RESERVED_SIZE + calculate_required_size(size, 1);
+		zone_size = ZONE_RESERVED_SIZE + calculate_large_size(size);
 	else
 		zone_size = ZONE_RESERVED_SIZE + calculate_required_size(zone_sizes[z_type], MIN_ZONE_ALLOC);
 

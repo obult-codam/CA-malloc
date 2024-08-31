@@ -9,19 +9,23 @@ ifeq ($(HOSTTYPE),)
 endif
 NAME		:= libft_malloc_${HOSTTYPE}.so
 SYMNAME 	:= libft_malloc.so
-SRC			:= src/core.c
+SRC			:= src/core.c src/large.c
 SRC			+= src/strategy/${STRATEGY}.c
 
 OBJS		:= $(patsubst src/%.c, obj/%.o, $(SRC))
 GCDANO		:= $(OBJS:.o=.gcda) $(OBJS:.o=.gcno)
 CC			:= clang
 RM			:= rm -rf
-HEADER		:= -I lib/ -I . -I ${STRATEGY}/
-CFLAGS		:= -g -Wall -Wextra -Werror --coverage -O0
+HEADER		:= -I lib/
+CFLAGS		:= -Wall -Wextra -Werror
 LIBFT		:= Libft/libft.a
 MUTE		:=  2>&1 > /dev/null
 
+all:		CFLAGS += -O3
 all:		${NAME}
+
+test:		CFLAGS += -g --coverage -O0
+test:		${NAME}
 
 obj/%.o:	src/%.c
 				@mkdir -p $(dir $@)
