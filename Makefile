@@ -4,15 +4,19 @@ ifndef STRATEGY
 	STRATEGY := array
 endif
 
+ifndef MANAGER
+	MANAGER := core
+endif
+
 ifeq ($(HOSTTYPE),)
 	HOSTTYPE := $(shell uname -m)_$(shell uname -s)
 endif
 NAME		:= libft_malloc_${HOSTTYPE}.so
 SYMNAME 	:= libft_malloc.so
-SRC			:= src/core.c src/large.c
+SRC			= src/${MANAGER}.c src/large.c
 SRC			+= src/strategy/${STRATEGY}.c
 
-OBJS		:= $(patsubst src/%.c, obj/%.o, $(SRC))
+OBJS		= $(patsubst src/%.c, obj/%.o, $(SRC))
 GCDANO		:= $(OBJS:.o=.gcda) $(OBJS:.o=.gcno)
 CC			:= clang
 RM			:= rm -rf
@@ -46,7 +50,7 @@ clean-lib:
 re:			fclean all
 
 ${NAME}:	${OBJS} ${LIBFT}
-				@${CC} -shared $(OBJS) $(LIBFT) ${LDFLAGS} $(CFLAGS) -o $@
+				${CC} -shared $(OBJS) $(LIBFT) ${LDFLAGS} $(CFLAGS) -o $@
 				@ln -s ${NAME} ${SYMNAME}
 				$(info ************  malloc Ready!)
 

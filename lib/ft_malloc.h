@@ -13,8 +13,6 @@
 # define SMALL_SIZE 512
 # define MIN_ZONE_ALLOC 8
 
-extern t_list *g_head;
-
 typedef enum e_zone_type {
 	TINY = 0,
 	SMALL,
