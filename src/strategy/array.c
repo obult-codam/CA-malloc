@@ -114,9 +114,10 @@ void *resize_alloc(void *head, void *ptr, size_t size)
 /**
  * \brief Prints out information about the allocations in this zone.
 */
-void print_info(void *head)
+size_t print_info(void *head)
 {
     struct s_array_header *header = head;
+    size_t total_size = 0;
 
     for (uint32_t i = 0; i < header->alloc_amount; i++) {
         if (header->size_in_use[i] == 0)
@@ -124,6 +125,26 @@ void print_info(void *head)
 
         void *start = header->allocs + (header->max_size * i);
         fprintf(stderr, "%p - %p : %lu bytes\n", start, start + header->size_in_use[i], header->size_in_use[i]);
+        total_size += header->size_in_use[i];
+    }
+    return total_size;
+}
+
+/* This show an allocations spread, not a hex dump! */
+void print_debug(void *head)
+{
+    struct s_array_header *header = head;
+    size_t size;
+
+    for (uint32_t i = 0; i < header->alloc_amount; i++) {
+        if (i % 16 == 0)
+            fprintf(stderr, "\n");
+
+        size = header->size_in_use[i];
+        if (size == 0)
+            fprintf(stderr, "[\033[36m%.2zx\033[0m]  ", size);
+        else
+            fprintf(stderr, "[\033[91m%.2zx\033[0m]  ", size);
     }
 }
 

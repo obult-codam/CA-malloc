@@ -164,18 +164,28 @@ void *resize_alloc(void *head, void *ptr, size_t size)
 /**
  * \brief Prints out information about the allocations in this zone.
 */
-void print_info(void *head)
+size_t print_info(void *head)
 {
     struct s_ll_zone_header *header = head;
     struct s_alloc_header *node = header->head;
+    size_t total_size = 0;
 
     while (node != NULL)
     {
         void *start = (void *)(&node[1]);
         fprintf(stderr, "%p - %p : %lu bytes\n", start, start + node->size, node->size);
 
+        total_size += node->size;
         node = node->next;
     }
+    return total_size;
+}
+
+/* Linked list is not ideal for hex dump */
+void print_debug(void *head)
+{
+    (void)head;
+    return;
 }
 
 size_t get_alloc_size(void *head, void *ptr)

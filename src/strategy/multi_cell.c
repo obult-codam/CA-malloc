@@ -188,9 +188,10 @@ void *resize_alloc(void *head, void *ptr, size_t size)
 /**
  * \brief Prints out information about the allocations in this zone.
 */
-void print_info(void *head)
+size_t print_info(void *head)
 {
     struct s_mcell_header *header = head;
+    size_t total_size = 0;
 
     for (size_t i = 0; i < header->total_cells; i++) {
         if (header->size_in_use[i] == 0)
@@ -200,11 +201,13 @@ void print_info(void *head)
         size_t size = get_alloc_size(head, start);
         i += size / CELL_SIZE + (size % CELL_SIZE ? 1 : 0);
         fprintf(stderr, "%p - %p : %lu bytes\n", start, start + size, size);
+        total_size += size;
     }
+    return total_size;
 }
 
 /**
- * Hex dump
+ * Alloction spread (in hex), not the actual allocations hex dump!
  */
 void print_debug(void *head)
 {

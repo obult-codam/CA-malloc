@@ -11,37 +11,37 @@ MUTE_ALL	= 2>&1 > /dev/null
 STANDARD_UT = obj/unit_tests.o
 
 # array
-ARRAY_UT = array.ut
+ARRAY_UT = array.tst
 ARRAY_UT_SRCS = ../src/strategy/array.c
 ARRAY_UT_OBJS = $(patsubst ../src/%.c, ../obj/%.o, $(ARRAY_UT_SRCS)) ${STANDARD_UT}
 ARRAY_UT_GCDANO = $(ARRAY_UT_OBJS:.o=.gcda) $(ARRAY_UT_OBJS:.o=.gcno)
 
 # linked
-LINKED_UT = linked.ut
+LINKED_UT = linked.tst
 LINKED_UT_SRCS = ../src/strategy/linked.c
 LINKED_UT_OBJS = $(patsubst ../src/%.c, ../obj/%.o, $(LINKED_UT_SRCS)) ${STANDARD_UT}
 LINKED_UT_GCDANO = $(LINKED_UT_OBJS:.o=.gcda) $(LINKED_UT_OBJS:.o=.gcno)
 
 # multi_cell
-MCELL_UT = multi_cell.ut
+MCELL_UT = multi_cell.tst
 MCELL_UT_SRCS = ../src/strategy/multi_cell.c
 MCELL_UT_OBJS = $(patsubst ../src/%.c, ../obj/%.o, $(MCELL_UT_SRCS)) obj/multi_cell_ut.o
 MCELL_UT_GCDANO = $(MCELL_UT_OBJS:.o=.gcda) $(MCELL_UT_OBJS:.o=.gcno)
 
 # yolo
-YOLO_UT = yolo.ut
+YOLO_UT = yolo.tst
 YOLO_UT_SRCS = ../src/strategy/yolo.c
 YOLO_UT_OBJS = $(patsubst ../src/%.c, ../obj/%.o, $(YOLO_UT_SRCS)) obj/yolo_tests.o
 YOLO_UT_GCDANO = $(YOLO_UT_OBJS:.o=.gcda) $(YOLO_UT_OBJS:.o=.gcno)
 
 # large
-LARGE_UT = large.ut
+LARGE_UT = large.tst
 LARGE_UT_SRCS =
 LARGE_UT_OBJS = $(patsubst ../src/%.c, ../obj/%.o, $(LARGE_UT_SRCS)) obj/large_tests.o
 LARGE_UT_GCDANO = $(LARGE_UT_OBJS:.o=.gcda) $(LARGE_UT_OBJS:.o=.gcno)
 
 # Full test
-FULLTEST = fulltest
+FULLTEST = full.tst
 FT_OBJ = obj/full_tests.o
 FT_GCDANO = $(FT_OBJ:.o=.gcda) $(FT_OBJ:.o=.gcno)
 FT_SYM = libft_malloc.so

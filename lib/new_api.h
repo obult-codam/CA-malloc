@@ -51,7 +51,8 @@ void *resize_alloc(void *head, void *ptr, size_t size);
 /**
  * \brief Prints out information about the allocations in this zone.
 */
-void print_info(void *head);
+size_t print_info(void *head);
+void print_debug(void *head);
 
 /**
  * TODO: Look into adding a single_alloc_zone creator Fn.

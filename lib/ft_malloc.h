@@ -57,6 +57,7 @@ size_t	alloc_header_size();
 
 // ### Public API ###
 void	show_alloc_mem();
+void	show_alloc_mem_ex();
 void	free(void *ptr);
 void	*malloc(size_t size);
 void	*realloc(void *ptr, size_t size);

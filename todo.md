@@ -6,9 +6,13 @@
 
 [x] fix show alloc mem per zone type.
 
-[ ] thread save bonus
+[x] thread save bonus
     _thread local storage? (needs a readme mention too!)
-[ ] debug info bonus (show_alloc_mem_ex())
+
+[x] fix normal show_alloc_mem
+    [x] calculate total allocation size
+     x  -> create api for zone which returns total size used.
+[x] debug info bonus (show_alloc_mem_ex())
 
 [ ] project info
     [ ] readme

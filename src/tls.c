@@ -237,22 +237,25 @@ void	print_zone_size(t_zone_header *zone) {
 
 void	show_alloc_mem() {
 	t_list *l_zone = g_head;
+	size_t total_size = 0;
 
 	fprintf(stderr, "----------------\n");
 
 	while (l_zone) {
 		t_zone_header *zone = (t_zone_header *)l_zone->content;
+
 		// print zone info (type + start location)
 		print_zone_size(zone);
 
 		// Strategy dependent
 		if (zone->zone_type == LARGE)
-			printf_large_info(zone->alloc_head);
+			total_size += printf_large_info(zone->alloc_head);
 		else
-			print_info(zone->alloc_head);
+			total_size += print_info(zone->alloc_head);
 
 		l_zone = l_zone->next;
 	}
+	fprintf(stderr, "Total : %lu bytes\n", total_size);
 }
 
 /**

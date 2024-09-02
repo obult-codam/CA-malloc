@@ -55,6 +55,7 @@ int main(void)
      */
     MODULE("Free");
     show_alloc_mem();
+    show_alloc_mem_ex();
     free(pt1);
     free(pt2);
     free(pt3);

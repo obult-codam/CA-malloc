@@ -102,10 +102,35 @@ void *resize_alloc(void *head, void *ptr, size_t size)
 /**
  * \brief Prints out information about the allocations in this zone.
 */
-void print_info(void *head)
+size_t print_info(void *head)
 {
-    (void)head;
-    printf("YOLO\n");
+    struct s_yolo_header *header = head;
+    size_t size_used = (size_t)header->next_alloc - (size_t)&header[1];
+
+    printf("YOLO -> alloc count: %lu, combined size : %lu\n", header->alloc_count, size_used);
+    return size_used;
+}
+
+/* Do a hex dump instead of allocation spread.*/
+void print_debug(void *head)
+{
+    struct s_yolo_header *header = head;
+    size_t size_used = (size_t)header->next_alloc - (size_t)&header[1];
+    void *base = (void *)&header[1];
+    size_t dump;
+
+    for (size_t i = 0; i < size_used / 8; i++)
+    {
+        if (i % 8 == 0)
+            fprintf(stderr, "\n");
+
+        dump = *(size_t *)&base[i * 8];
+
+        if (dump)
+            fprintf(stderr, "[\033[91m%.8zx\033[0m]  ", dump);
+        else
+            fprintf(stderr, "[\033[36m%.8zx\033[0m]  ", dump);
+    }
 }
 
 /**

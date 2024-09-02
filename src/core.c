@@ -219,29 +219,56 @@ void	pointer_not_allocated(void *ptr) {
  * SHOW_ALLOC_MEM
  */
 
-void	print_zone_size(t_zone_header *zone) {
+void	print_zone_size(t_zone_header *zone)
+{
 	char *zones_as_string[] = { "TINY: ", "SMALL:", "LARGE:" };
 	fprintf(stderr, "%s : %p size: %lu\n", zones_as_string[zone->zone_type], zone - LL_NODE_SIZE, zone->zone_size);
 }
 
-void	show_alloc_mem() {
+void	show_alloc_mem()
+{
 	t_list *l_zone = g_head;
+	size_t total_size = 0;
 
-	fprintf(stderr, "----------------\n");
+	fprintf(stderr, "--- Show alloc mem ---\n{\n");
 
 	while (l_zone) {
 		t_zone_header *zone = (t_zone_header *)l_zone->content;
+
 		// print zone info (type + start location)
 		print_zone_size(zone);
 
 		// Strategy dependent
 		if (zone->zone_type == LARGE)
-			printf_large_info(zone->alloc_head);
+			total_size += printf_large_info(zone->alloc_head);
 		else
-			print_info(zone->alloc_head);
+			total_size += print_info(zone->alloc_head);
 
 		l_zone = l_zone->next;
 	}
+	fprintf(stderr, "}\tTotal : %lu bytes\n", total_size);
+}
+
+void show_alloc_mem_ex()
+{
+	t_list *l_zone = g_head;
+
+	fprintf(stderr, "--- Show alloc mem ex ---\n{\n");
+
+	while (l_zone) {
+		t_zone_header *zone = (t_zone_header *)l_zone->content;
+
+		// print zone info (type + start location)
+		print_zone_size(zone);
+
+		// Strategy dependent
+		if (zone->zone_type != LARGE) {
+			print_debug(zone->alloc_head);
+		}
+
+		l_zone = l_zone->next;
+	}
+	fprintf(stderr, "}\n");
 }
 
 /**
@@ -249,7 +276,8 @@ void	show_alloc_mem() {
  */
 
 // size only used on LARGE objects
-size_t	calculate_zone_size(t_zone_type z_type, size_t size) {
+size_t	calculate_zone_size(t_zone_type z_type, size_t size)
+{
 	size_t	zone_sizes[2] = { TINY_SIZE, SMALL_SIZE };
 	size_t	zone_size;
 	int		page_size = getpagesize();

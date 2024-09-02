@@ -53,12 +53,13 @@ void *resize_large_alloc(void *head, void *ptr, size_t size)
     return NULL;
 }
 
-void printf_large_info(void *head)
+size_t printf_large_info(void *head)
 {
     struct s_large_header *header = head;
     void *start = (void *)&header[1];
 
     fprintf(stderr, "%p - %p : %lu bytes\n", start, start + header->size, header->size);
+    return header->size;
 }
 
 size_t get_large_alloc_size(void *head, void *ptr)

@@ -10,5 +10,6 @@ Libft/libft.a
 *.gcda
 *.gcno
 *.profraw
-*.ut
+*.tst
 temp
+cov.info

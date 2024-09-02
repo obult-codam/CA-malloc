@@ -147,5 +147,6 @@ int main(void)
     print_debug(head);
 
     fprintf(stderr, "\nEND tests!\n");
+    (void)pt3;
     return 0;
 }
