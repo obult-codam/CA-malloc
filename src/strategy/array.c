@@ -3,10 +3,10 @@
 #include <stdio.h>
 
 struct s_array_header {
-	size_t	alloc_amount;
-	size_t  max_size;
-	size_t	*size_in_use;	// array containing the size of the alloc
-	void	*allocs;		// array containing the alloc
+	size_t alloc_amount;
+	size_t max_size;
+	uint16_t *size_in_use;	// array containing the size of the allocs
+	void *allocs;	// array containing the allocs
 };
 
 /**
@@ -14,7 +14,7 @@ struct s_array_header {
 */
 size_t calculate_required_size(size_t alloc_size, size_t amount)
 {
-	return sizeof(struct s_array_header) + (alloc_size + sizeof(size_t)) * amount;
+	return sizeof(struct s_array_header) + (alloc_size + sizeof(uint16_t)) * amount;
 }
 
 /**
@@ -124,7 +124,7 @@ size_t print_info(void *head)
 			continue;
 
 		void *start = header->allocs + (header->max_size * i);
-		fprintf(stderr, "%p - %p : %lu bytes\n", start, start + header->size_in_use[i], header->size_in_use[i]);
+		fprintf(stderr, "%p - %p : %u bytes\n", start, start + header->size_in_use[i], header->size_in_use[i]);
 		total_size += header->size_in_use[i];
 	}
 	return total_size;
@@ -134,7 +134,7 @@ size_t print_info(void *head)
 void print_debug(void *head)
 {
 	struct s_array_header *header = head;
-	size_t size;
+	uint32_t size;
 
 	for (uint32_t i = 0; i < header->alloc_amount; i++) {
 		if (i % 16 == 0)
@@ -142,9 +142,9 @@ void print_debug(void *head)
 
 		size = header->size_in_use[i];
 		if (size == 0)
-			fprintf(stderr, "[\033[36m%.2zx\033[0m]  ", size);
+			fprintf(stderr, "[\033[36m%.2x\033[0m]  ", size);
 		else
-			fprintf(stderr, "[\033[91m%.2zx\033[0m]  ", size);
+			fprintf(stderr, "[\033[91m%.2x\033[0m]  ", size);
 	}
 }
 
