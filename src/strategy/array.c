@@ -4,7 +4,7 @@
 
 struct s_array_header {
 	size_t	alloc_amount;
-    size_t  max_size;
+	size_t  max_size;
 	size_t	*size_in_use;	// array containing the size of the alloc
 	void	*allocs;		// array containing the alloc
 };
@@ -14,7 +14,7 @@ struct s_array_header {
 */
 size_t calculate_required_size(size_t alloc_size, size_t amount)
 {
-    return sizeof(struct s_array_header) + (alloc_size + sizeof(size_t)) * amount;
+	return sizeof(struct s_array_header) + (alloc_size + sizeof(size_t)) * amount;
 }
 
 /**
@@ -23,18 +23,18 @@ size_t calculate_required_size(size_t alloc_size, size_t amount)
 */
 void setup_zone(void *head, size_t max_alloc_size, size_t total_size)
 {
-    struct s_array_header *header = head;
-    header->alloc_amount = (total_size - sizeof(struct s_array_header)) / (max_alloc_size + sizeof(*(header->size_in_use)));
+	struct s_array_header *header = head;
+	header->alloc_amount = (total_size - sizeof(struct s_array_header)) / (max_alloc_size + sizeof(*(header->size_in_use)));
 
-    header->max_size = max_alloc_size;
-    header->size_in_use = (void *)(&header[1]);
-    header->allocs = (void *)(&header->size_in_use[header->alloc_amount]);
-    if (max_alloc_size < 4096)
-        header->allocs += (max_alloc_size - ((size_t)header->allocs % max_alloc_size)) % max_alloc_size;
+	header->max_size = max_alloc_size;
+	header->size_in_use = (void *)(&header[1]);
+	header->allocs = (void *)(&header->size_in_use[header->alloc_amount]);
+	if (max_alloc_size < 4096)
+		header->allocs += (max_alloc_size - ((size_t)header->allocs % max_alloc_size)) % max_alloc_size;
 
-    for (size_t i = 0; i < header->alloc_amount; i++) {
-        header->size_in_use[i] = 0;
-    }
+	for (size_t i = 0; i < header->alloc_amount; i++) {
+		header->size_in_use[i] = 0;
+	}
 }
 
 /**
@@ -47,16 +47,16 @@ void setup_zone(void *head, size_t max_alloc_size, size_t total_size)
 */
 void *create_alloc(void *head, size_t size)
 {
-    struct s_array_header *header = head;
+	struct s_array_header *header = head;
 
-    for (u_int32_t i = 0; i < header->alloc_amount; i++) {
-        if (header->size_in_use[i] != 0)
-            continue;
+	for (u_int32_t i = 0; i < header->alloc_amount; i++) {
+		if (header->size_in_use[i] != 0)
+			continue;
 
-        header->size_in_use[i] = size;
-        return header->allocs + (i * header->max_size);
-    }
-    return NULL;
+		header->size_in_use[i] = size;
+		return header->allocs + (i * header->max_size);
+	}
+	return NULL;
 }
 
 /**
@@ -66,13 +66,13 @@ void *create_alloc(void *head, size_t size)
 */
 void cleanup_alloc(void *head, void *ptr)
 {
-    struct s_array_header *header = head;
+	struct s_array_header *header = head;
 
-    if (ptr == NULL)
-        return;
+	if (ptr == NULL)
+		return;
 
-    uint32_t nth_alloc = (ptr - header->allocs) / header->max_size;
-    header->size_in_use[nth_alloc] = 0;
+	uint32_t nth_alloc = (ptr - header->allocs) / header->max_size;
+	header->size_in_use[nth_alloc] = 0;
 }
 
 /**
@@ -80,13 +80,13 @@ void cleanup_alloc(void *head, void *ptr)
 */
 bool zone_is_empty(void *head)
 {
-    struct s_array_header *header = head;
+	struct s_array_header *header = head;
 
-    for (uint32_t i = 0; i < header->alloc_amount; i++) {
-        if (header->size_in_use[i] != 0)
-            return false;
-    }
-    return true;
+	for (uint32_t i = 0; i < header->alloc_amount; i++) {
+		if (header->size_in_use[i] != 0)
+			return false;
+	}
+	return true;
 }
 
 /**
@@ -101,14 +101,14 @@ bool zone_is_empty(void *head)
 */
 void *resize_alloc(void *head, void *ptr, size_t size)
 {
-    struct s_array_header *header = head;
-    if (size > header->max_size)
-        return NULL;
+	struct s_array_header *header = head;
+	if (size > header->max_size)
+		return NULL;
 
-    uint32_t nth_alloc = (ptr - header->allocs) / header->max_size;
+	uint32_t nth_alloc = (ptr - header->allocs) / header->max_size;
 
-    header->size_in_use[nth_alloc] = size;
-    return ptr;
+	header->size_in_use[nth_alloc] = size;
+	return ptr;
 }
 
 /**
@@ -116,43 +116,43 @@ void *resize_alloc(void *head, void *ptr, size_t size)
 */
 size_t print_info(void *head)
 {
-    struct s_array_header *header = head;
-    size_t total_size = 0;
+	struct s_array_header *header = head;
+	size_t total_size = 0;
 
-    for (uint32_t i = 0; i < header->alloc_amount; i++) {
-        if (header->size_in_use[i] == 0)
-            continue;
+	for (uint32_t i = 0; i < header->alloc_amount; i++) {
+		if (header->size_in_use[i] == 0)
+			continue;
 
-        void *start = header->allocs + (header->max_size * i);
-        fprintf(stderr, "%p - %p : %lu bytes\n", start, start + header->size_in_use[i], header->size_in_use[i]);
-        total_size += header->size_in_use[i];
-    }
-    return total_size;
+		void *start = header->allocs + (header->max_size * i);
+		fprintf(stderr, "%p - %p : %lu bytes\n", start, start + header->size_in_use[i], header->size_in_use[i]);
+		total_size += header->size_in_use[i];
+	}
+	return total_size;
 }
 
 /* This show an allocations spread, not a hex dump! */
 void print_debug(void *head)
 {
-    struct s_array_header *header = head;
-    size_t size;
+	struct s_array_header *header = head;
+	size_t size;
 
-    for (uint32_t i = 0; i < header->alloc_amount; i++) {
-        if (i % 16 == 0)
-            fprintf(stderr, "\n");
+	for (uint32_t i = 0; i < header->alloc_amount; i++) {
+		if (i % 16 == 0)
+			fprintf(stderr, "\n");
 
-        size = header->size_in_use[i];
-        if (size == 0)
-            fprintf(stderr, "[\033[36m%.2zx\033[0m]  ", size);
-        else
-            fprintf(stderr, "[\033[91m%.2zx\033[0m]  ", size);
-    }
+		size = header->size_in_use[i];
+		if (size == 0)
+			fprintf(stderr, "[\033[36m%.2zx\033[0m]  ", size);
+		else
+			fprintf(stderr, "[\033[91m%.2zx\033[0m]  ", size);
+	}
 }
 
 /* needed for getting the size for a out of zone realloc (need to know how much to copy) */
 size_t get_alloc_size(void *head, void *ptr)
 {
-    struct s_array_header *header = head;
+	struct s_array_header *header = head;
 
-    uint32_t nth_alloc = (ptr - header->allocs) / header->max_size;
-    return header->size_in_use[nth_alloc];
+	uint32_t nth_alloc = (ptr - header->allocs) / header->max_size;
+	return header->size_in_use[nth_alloc];
 }

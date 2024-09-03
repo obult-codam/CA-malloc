@@ -8,9 +8,9 @@
  */
 
 struct s_yolo_header {
-    size_t total_size; // offset from *head(er)
-    size_t alloc_count;
-    void *next_alloc;
+	size_t total_size; // offset from *head(er)
+	size_t alloc_count;
+	void *next_alloc;
 };
 
 /**
@@ -18,7 +18,7 @@ struct s_yolo_header {
 */
 size_t calculate_required_size(size_t alloc_size, size_t amount)
 {
-    return sizeof(struct s_yolo_header) + alloc_size * amount;
+	return sizeof(struct s_yolo_header) + alloc_size * amount;
 }
 
 /**
@@ -27,12 +27,12 @@ size_t calculate_required_size(size_t alloc_size, size_t amount)
 */
 void setup_zone(void *head, size_t max_alloc_size, size_t total_size)
 {
-    struct s_yolo_header *header = head;
-    (void)max_alloc_size;
+	struct s_yolo_header *header = head;
+	(void)max_alloc_size;
 
-    header->alloc_count = 0;
-    header->next_alloc = (void *)(&header[1]);
-    header->total_size = total_size;
+	header->alloc_count = 0;
+	header->next_alloc = (void *)(&header[1]);
+	header->total_size = total_size;
 }
 
 /**
@@ -45,16 +45,16 @@ void setup_zone(void *head, size_t max_alloc_size, size_t total_size)
 */
 void *create_alloc(void *head, size_t size)
 {
-    struct s_yolo_header *header = head;
-    void *ptr;
+	struct s_yolo_header *header = head;
+	void *ptr;
 
-    if ((header->next_alloc + size) > (head + header->total_size))
-        return NULL;
+	if ((header->next_alloc + size) > (head + header->total_size))
+		return NULL;
 
-    header->alloc_count++;
-    ptr = header->next_alloc;
-    header->next_alloc += size;
-    return ptr;
+	header->alloc_count++;
+	ptr = header->next_alloc;
+	header->next_alloc += size;
+	return ptr;
 }
 
 /**
@@ -64,12 +64,12 @@ void *create_alloc(void *head, size_t size)
 */
 void cleanup_alloc(void *head, void *ptr)
 {
-    struct s_yolo_header *header = head;
+	struct s_yolo_header *header = head;
 
-    if (ptr > head + header->total_size || ptr < head)
-        return;
+	if (ptr > head + header->total_size || ptr < head)
+		return;
 
-    header->alloc_count--;
+	header->alloc_count--;
 }
 
 /**
@@ -77,8 +77,8 @@ void cleanup_alloc(void *head, void *ptr)
 */
 bool zone_is_empty(void *head)
 {
-    struct s_yolo_header *header = head;
-    return header->alloc_count == 0;
+	struct s_yolo_header *header = head;
+	return header->alloc_count == 0;
 }
 
 /**
@@ -93,10 +93,10 @@ bool zone_is_empty(void *head)
 */
 void *resize_alloc(void *head, void *ptr, size_t size)
 {
-    (void)head;
-    (void)ptr;
-    (void)size;
-    return NULL;
+	(void)head;
+	(void)ptr;
+	(void)size;
+	return NULL;
 }
 
 /**
@@ -104,33 +104,33 @@ void *resize_alloc(void *head, void *ptr, size_t size)
 */
 size_t print_info(void *head)
 {
-    struct s_yolo_header *header = head;
-    size_t size_used = (size_t)header->next_alloc - (size_t)&header[1];
+	struct s_yolo_header *header = head;
+	size_t size_used = (size_t)header->next_alloc - (size_t)&header[1];
 
-    printf("YOLO -> alloc count: %lu, combined size : %lu\n", header->alloc_count, size_used);
-    return size_used;
+	printf("YOLO -> alloc count: %lu, combined size : %lu\n", header->alloc_count, size_used);
+	return size_used;
 }
 
 /* Do a hex dump instead of allocation spread.*/
 void print_debug(void *head)
 {
-    struct s_yolo_header *header = head;
-    size_t size_used = (size_t)header->next_alloc - (size_t)&header[1];
-    void *base = (void *)&header[1];
-    size_t dump;
+	struct s_yolo_header *header = head;
+	size_t size_used = (size_t)header->next_alloc - (size_t)&header[1];
+	void *base = (void *)&header[1];
+	size_t dump;
 
-    for (size_t i = 0; i < size_used / 8; i++)
-    {
-        if (i % 8 == 0)
-            fprintf(stderr, "\n");
+	for (size_t i = 0; i < size_used / 8; i++)
+	{
+		if (i % 8 == 0)
+			fprintf(stderr, "\n");
 
-        dump = *(size_t *)&base[i * 8];
+		dump = *(size_t *)&base[i * 8];
 
-        if (dump)
-            fprintf(stderr, "[\033[91m%.8zx\033[0m]  ", dump);
-        else
-            fprintf(stderr, "[\033[36m%.8zx\033[0m]  ", dump);
-    }
+		if (dump)
+			fprintf(stderr, "[\033[91m%.8zx\033[0m]  ", dump);
+		else
+			fprintf(stderr, "[\033[36m%.8zx\033[0m]  ", dump);
+	}
 }
 
 /**
@@ -140,9 +140,9 @@ void print_debug(void *head)
 /* needed for getting the size for a out of zone realloc (need to know how much to copy) */
 size_t get_alloc_size(void *head, void *ptr)
 {
-    (void)head;
-    (void)ptr;
-    return 0;
+	(void)head;
+	(void)ptr;
+	return 0;
 }
 
 /**

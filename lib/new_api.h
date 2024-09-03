@@ -3,6 +3,14 @@
 #include <stddef.h>
 #include <stdbool.h>
 
+#define MALLOCDEBUG 1
+
+/**
+ * Error reporting api for strategies.
+ */
+void double_free(void *address);
+void pointer_not_allocated(void *ptr);
+
 /**
  * \brief Calculate the full size strategy needs for internal storage of zone and headers.
 */

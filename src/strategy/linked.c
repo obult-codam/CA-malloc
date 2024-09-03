@@ -4,13 +4,13 @@
 #include "ft_malloc.h"
 
 struct s_alloc_header {
-    struct s_alloc_header *next;
-    size_t size;
+	struct s_alloc_header *next;
+	size_t size;
 };
 
 struct s_ll_zone_header {
-    size_t total_size;
-    struct s_alloc_header *head;
+	size_t total_size;
+	struct s_alloc_header *head;
 };
 
 #define SIZE_ALLOC_HEADER sizeof(struct s_alloc_header)
@@ -32,10 +32,10 @@ struct s_ll_zone_header {
 */
 size_t calculate_required_size(size_t alloc_size, size_t amount)
 {
-    return (
-        (alloc_size + SIZE_ALLOC_HEADER) * amount
-        + sizeof(struct s_ll_zone_header)
-    );
+	return (
+		(alloc_size + SIZE_ALLOC_HEADER) * amount
+		+ sizeof(struct s_ll_zone_header)
+	);
 }
 
 /**
@@ -44,9 +44,9 @@ size_t calculate_required_size(size_t alloc_size, size_t amount)
 */
 void setup_zone(void *head, size_t max_alloc_size, size_t total_size)
 {
-    (void)max_alloc_size;   // Not required for this strategy.
-    struct s_ll_zone_header *header = head;
-    header->total_size = total_size;
+	(void)max_alloc_size;   // Not required for this strategy.
+	struct s_ll_zone_header *header = head;
+	header->total_size = total_size;
 }
 
 /* ----- Create alloc ----- */
@@ -54,9 +54,9 @@ void setup_zone(void *head, size_t max_alloc_size, size_t total_size)
 // Check create insert_alloc
 static void *add_alloc(struct s_alloc_header *alloc, size_t size, void *next)
 {
-    alloc->next = next;
-    alloc->size = size;
-    return (void *)alloc + SIZE_ALLOC_HEADER;
+	alloc->next = next;
+	alloc->size = size;
+	return (void *)alloc + SIZE_ALLOC_HEADER;
 }
 
 /**
@@ -69,34 +69,34 @@ static void *add_alloc(struct s_alloc_header *alloc, size_t size, void *next)
 */
 void *create_alloc(void *head, size_t size)
 {
-    struct s_ll_zone_header *header = head;
+	struct s_ll_zone_header *header = head;
 
-    // check if the next node is NULL add it there if it is (first node).
-    if (header->head == NULL) {
-        header->head = (void *)&header[1];
-        return add_alloc(header->head, size, NULL);
-    }
+	// check if the next node is NULL add it there if it is (first node).
+	if (header->head == NULL) {
+		header->head = (void *)&header[1];
+		return add_alloc(header->head, size, NULL);
+	}
 
-    // check if there is a next node and  while there is evaluate if there is room inbetween.
-    struct s_alloc_header *tmp;
-    for (tmp = header->head; tmp != NULL; tmp = tmp->next) {
-        // if last node check if there is enough room till the end according to header(-total_size).
-        if (tmp->next == NULL) {
-            break ;
-        }
-        // is there size available inbetween nodes?
-        if ((size_t)tmp->next >= (size_t)tmp + tmp->size + size + 2*SIZE_ALLOC_HEADER) {
-            void *tmp_next = tmp->next;
-            tmp->next = (void*)tmp + SIZE_ALLOC_HEADER + tmp->size;
-            return add_alloc(tmp->next, size, tmp_next);
-        }
-    }
-    // check if there is enough room till the end according to header(-total_size).
-    if ((size_t)header + header->total_size >= (size_t)tmp + tmp->size + size + 2*SIZE_ALLOC_HEADER) {
-        tmp->next = (void *)tmp + tmp->size + SIZE_ALLOC_HEADER;
-        return add_alloc(tmp->next, size, NULL);
-    }
-    return NULL;
+	// check if there is a next node and  while there is evaluate if there is room inbetween.
+	struct s_alloc_header *tmp;
+	for (tmp = header->head; tmp != NULL; tmp = tmp->next) {
+		// if last node check if there is enough room till the end according to header(-total_size).
+		if (tmp->next == NULL) {
+			break ;
+		}
+		// is there size available inbetween nodes?
+		if ((size_t)tmp->next >= (size_t)tmp + tmp->size + size + 2*SIZE_ALLOC_HEADER) {
+			void *tmp_next = tmp->next;
+			tmp->next = (void*)tmp + SIZE_ALLOC_HEADER + tmp->size;
+			return add_alloc(tmp->next, size, tmp_next);
+		}
+	}
+	// check if there is enough room till the end according to header(-total_size).
+	if ((size_t)header + header->total_size >= (size_t)tmp + tmp->size + size + 2*SIZE_ALLOC_HEADER) {
+		tmp->next = (void *)tmp + tmp->size + SIZE_ALLOC_HEADER;
+		return add_alloc(tmp->next, size, NULL);
+	}
+	return NULL;
 }
 
 /**
@@ -104,19 +104,19 @@ void *create_alloc(void *head, size_t size)
 */
 void cleanup_alloc(void *head, void *ptr)
 {
-    struct s_ll_zone_header *header = head;
-    struct s_alloc_header *prev = NULL;
-    for (struct s_alloc_header *tmp = header->head; tmp != NULL; tmp = tmp->next) {
-        if ((void *)tmp + SIZE_ALLOC_HEADER == ptr) {
-            if (prev == NULL)
-                header->head = tmp->next;
-            else
-                prev->next = tmp->next;
+	struct s_ll_zone_header *header = head;
+	struct s_alloc_header *prev = NULL;
+	for (struct s_alloc_header *tmp = header->head; tmp != NULL; tmp = tmp->next) {
+		if ((void *)tmp + SIZE_ALLOC_HEADER == ptr) {
+			if (prev == NULL)
+				header->head = tmp->next;
+			else
+				prev->next = tmp->next;
 
-            return;
-        }
-        prev = tmp;
-    }
+			return;
+		}
+		prev = tmp;
+	}
 }
 
 /**
@@ -124,8 +124,8 @@ void cleanup_alloc(void *head, void *ptr)
 */
 bool zone_is_empty(void *head)
 {
-    bool is_empty = (((struct s_ll_zone_header *)head)->head == NULL);
-    return (is_empty);
+	bool is_empty = (((struct s_ll_zone_header *)head)->head == NULL);
+	return (is_empty);
 }
 
 /**
@@ -140,25 +140,25 @@ bool zone_is_empty(void *head)
 */
 void *resize_alloc(void *head, void *ptr, size_t size)
 {
-    struct s_ll_zone_header *header = head;
-    for (struct s_alloc_header *tmp = header->head; tmp != NULL; tmp = tmp->next) {
-        if ((void *)tmp + SIZE_ALLOC_HEADER == ptr) {
-            if (!tmp->next)
-            {
-                if ((void *)tmp + SIZE_ALLOC_HEADER + size < (void *)header + header->total_size) {
-                    tmp->size = size;
-                    return ptr;
-                }
-            }
-            else if ((void *)tmp + SIZE_ALLOC_HEADER + size < (void *)tmp->next)
-            {
-                tmp->size = size;
-                return ptr;
-            }
-            break;
-        }
-    } // LCOV_EXCL_LINE
-    return NULL;
+	struct s_ll_zone_header *header = head;
+	for (struct s_alloc_header *tmp = header->head; tmp != NULL; tmp = tmp->next) {
+		if ((void *)tmp + SIZE_ALLOC_HEADER == ptr) {
+			if (!tmp->next)
+			{
+				if ((void *)tmp + SIZE_ALLOC_HEADER + size < (void *)header + header->total_size) {
+					tmp->size = size;
+					return ptr;
+				}
+			}
+			else if ((void *)tmp + SIZE_ALLOC_HEADER + size < (void *)tmp->next)
+			{
+				tmp->size = size;
+				return ptr;
+			}
+			break;
+		}
+	} // LCOV_EXCL_LINE
+	return NULL;
 }
 
 /**
@@ -166,40 +166,36 @@ void *resize_alloc(void *head, void *ptr, size_t size)
 */
 size_t print_info(void *head)
 {
-    struct s_ll_zone_header *header = head;
-    struct s_alloc_header *node = header->head;
-    size_t total_size = 0;
+	struct s_ll_zone_header *header = head;
+	struct s_alloc_header *node = header->head;
+	size_t total_size = 0;
 
-    while (node != NULL)
-    {
-        void *start = (void *)(&node[1]);
-        fprintf(stderr, "%p - %p : %lu bytes\n", start, start + node->size, node->size);
+	while (node != NULL)
+	{
+		void *start = (void *)(&node[1]);
+		fprintf(stderr, "%p - %p : %lu bytes\n", start, start + node->size, node->size);
 
-        total_size += node->size;
-        node = node->next;
-    }
-    return total_size;
+		total_size += node->size;
+		node = node->next;
+	}
+	return total_size;
 }
 
 /* Linked list is not ideal for hex dump */
 void print_debug(void *head)
 {
-    (void)head;
-    return;
+	(void)head;
+	return;
 }
 
 size_t get_alloc_size(void *head, void *ptr)
 {
-    // should make a find function instead.
-    struct s_ll_zone_header *header = head;
-    for (struct s_alloc_header *tmp = header->head; tmp != NULL; tmp = tmp->next) {
-        if ((void *)tmp + SIZE_ALLOC_HEADER == ptr) {
-            return tmp->size;
-        }
-    }
-    return 0; // LCOV_EXCL_LINE
+	// should make a find function instead.
+	struct s_ll_zone_header *header = head;
+	for (struct s_alloc_header *tmp = header->head; tmp != NULL; tmp = tmp->next) {
+		if ((void *)tmp + SIZE_ALLOC_HEADER == ptr) {
+			return tmp->size;
+		}
+	}
+	return 0; // LCOV_EXCL_LINE
 }
-
-/**
- * TODO: Look into adding a single_alloc_zone creator Fn.
-*/

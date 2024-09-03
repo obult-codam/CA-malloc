@@ -85,3 +85,7 @@ The allocator can replace a regular malloc in a project.
 - The global *g_head* in the core manager is only visible in each program instance.
 This is to prevent two programs from accessing the same zone list while the
 library is shared in memory.
+
+## Malloc debug variables
+
+- set MALLOCDEBUG for a safer malloc which will not fail when a pointer is freed which has not been allocated.

@@ -4,16 +4,19 @@
 #include <stdio.h>
 #include <new_api.h>
 
+#define EMPTY_CELL 0
 #define CELL_SIZE 128
 #define MULTI_CELL 0XFF
+#define FREED_CELL (MULTI_CELL - 1)
 #define MAX(a, b) (a < b ? b : a)
+#define CELL_AVAILABLE(cell) (cell == EMPTY_CELL || cell == FREED_CELL)
 
 struct s_mcell_header {
-    size_t  alloc_amount;
-    size_t  total_cells;
-    size_t  max_size;
-    uint8_t *size_in_use;
-    void *allocs;
+	size_t  alloc_amount;
+	size_t  total_cells;
+	size_t  max_size;
+	uint8_t *size_in_use;
+	void *allocs;
 };
 
 /**
@@ -21,8 +24,8 @@ struct s_mcell_header {
 */
 size_t calculate_required_size(size_t alloc_size, size_t amount)
 {
-    uint32_t max_cells = alloc_size / CELL_SIZE + 1;
-    return sizeof(struct s_mcell_header) + (((CELL_SIZE + sizeof(uint8_t)) * max_cells) * amount);
+	uint32_t max_cells = alloc_size / CELL_SIZE + 1;
+	return sizeof(struct s_mcell_header) + (((CELL_SIZE + sizeof(uint8_t)) * max_cells) * amount);
 }
 
 /**
@@ -31,21 +34,21 @@ size_t calculate_required_size(size_t alloc_size, size_t amount)
 */
 void setup_zone(void *head, size_t max_alloc_size, size_t total_size)
 {
-    struct s_mcell_header *header = head;
-    uint32_t max_cells = max_alloc_size / CELL_SIZE + (max_alloc_size % CELL_SIZE ? 1 : 0);
-    uint32_t cif = (max_cells * sizeof(*header->size_in_use)); // storage for size data per (max) alloc.
+	struct s_mcell_header *header = head;
+	uint32_t max_cells = max_alloc_size / CELL_SIZE + (max_alloc_size % CELL_SIZE ? 1 : 0);
+	uint32_t cif = (max_cells * sizeof(*header->size_in_use)); // storage for size data per (max) alloc.
 
-    header->alloc_amount = (total_size - sizeof(*header)) / (MAX(max_alloc_size + cif, CELL_SIZE + cif));
-    header->max_size = max_alloc_size;
-    header->total_cells = (total_size - sizeof(*header)) / (CELL_SIZE + sizeof(uint8_t));
-    header->size_in_use = (void *)(&header[1]);
-    header->allocs = (void *)(&header->size_in_use[header->total_cells]);
-    header->allocs += (CELL_SIZE - ((size_t)header->allocs % CELL_SIZE)) % CELL_SIZE;
+	header->alloc_amount = (total_size - sizeof(*header)) / (MAX(max_alloc_size + cif, CELL_SIZE + cif));
+	header->max_size = max_alloc_size;
+	header->total_cells = (total_size - sizeof(*header)) / (CELL_SIZE + sizeof(uint8_t));
+	header->size_in_use = (void *)(&header[1]);
+	header->allocs = (void *)(&header->size_in_use[header->total_cells]);
+	header->allocs += (CELL_SIZE - ((size_t)header->allocs % CELL_SIZE)) % CELL_SIZE;
 
-    // probably redundant because of empy pages.
-    for (size_t i =0; i < header->total_cells; i++) {
-        header->size_in_use[i] = 0; // could be more efficient. (good memset or set per size_t block)
-    }
+	// probably redundant because of empy pages.
+	for (size_t i =0; i < header->total_cells; i++) {
+		header->size_in_use[i] = 0; // could be more efficient. (good memset or set per size_t block)
+	}
 }
 
 /**
@@ -59,49 +62,49 @@ void setup_zone(void *head, size_t max_alloc_size, size_t total_size)
 
 static size_t next_used_cell(uint8_t *size_in_use, size_t cells_left, size_t cells_required)
 {
-    size_t i = 0;
+	size_t i = 0;
 
-    if (cells_required > cells_left)
-        return cells_required;
+	if (cells_required > cells_left)
+		return cells_required;
 
-    for (; i < cells_required; i++) {
-        if (size_in_use[i] != 0)
-            return i;
-    }
-    return 0;
+	for (; i < cells_required; i++) {
+		if (!CELL_AVAILABLE(size_in_use[i]))
+			return i;
+	}
+	return 0;
 }
 
 static uint8_t calc_cell_size(size_t size)
 {
-    return size % CELL_SIZE ? size : CELL_SIZE;
+	return size % CELL_SIZE ? size : CELL_SIZE;
 }
 
 void *create_alloc(void *head, size_t size)
 {
-    struct s_mcell_header *header = head;
-    uint32_t cell_amount = size / CELL_SIZE;
-    size_t unavailable_cells;
-    size_t i;
+	struct s_mcell_header *header = head;
+	uint32_t cell_amount = size / CELL_SIZE;
+	size_t unavailable_cells;
+	size_t i;
 
-    if (size % CELL_SIZE)
-        cell_amount += 1;
+	if (size % CELL_SIZE)
+		cell_amount += 1;
 
-    for (i = 0; i < header->total_cells; i++) {
-        if (header->size_in_use[i] != 0)
-            continue;
-       unavailable_cells = next_used_cell(&header->size_in_use[i], header->total_cells - i, cell_amount);
-        if (unavailable_cells) {
-            i += unavailable_cells;
-            continue;
-        }
-        for (uint32_t j = 0; j + 1 < cell_amount; j++) {
-            header->size_in_use[i + j] = MULTI_CELL;
-        }
-        header->size_in_use[cell_amount + i - 1] = calc_cell_size(size);
+	for (i = 0; i < header->total_cells; i++) {
+		if (!CELL_AVAILABLE(header->size_in_use[i]))
+			continue;
+	   unavailable_cells = next_used_cell(&header->size_in_use[i], header->total_cells - i, cell_amount);
+		if (unavailable_cells) {
+			i += unavailable_cells;
+			continue;
+		}
+		for (uint32_t j = 0; j + 1 < cell_amount; j++) {
+			header->size_in_use[i + j] = MULTI_CELL;
+		}
+		header->size_in_use[cell_amount + i - 1] = calc_cell_size(size);
 
-        return header->allocs + (i * CELL_SIZE);
-    }
-    return NULL;
+		return header->allocs + (i * CELL_SIZE);
+	}
+	return NULL;
 }
 
 /**
@@ -111,18 +114,32 @@ void *create_alloc(void *head, size_t size)
 */
 void cleanup_alloc(void *head, void *ptr)
 {
-    struct s_mcell_header *header = head;
+	struct s_mcell_header *header = head;
 
-    if (ptr == NULL)
-        return;
+	if (ptr == NULL)
+		return;
 
-    uint32_t nth_cell = (ptr - header->allocs) / CELL_SIZE;
-    while (header->size_in_use[nth_cell] == MULTI_CELL)
-    {
-        header->size_in_use[nth_cell] = 0;
-        nth_cell++;
-    }
-    header->size_in_use[nth_cell] = 0;
+	uint32_t nth_cell = (ptr - header->allocs) / CELL_SIZE;
+
+#ifdef MALLOCDEBUG
+	if (header->size_in_use[nth_cell] == FREED_CELL) {
+		double_free(ptr);
+		return;
+	}
+
+	uint32_t first_cell = nth_cell;
+#endif
+
+	while (header->size_in_use[nth_cell] == MULTI_CELL)
+	{
+		header->size_in_use[nth_cell] = EMPTY_CELL;
+		nth_cell++;
+	}
+	header->size_in_use[nth_cell] = EMPTY_CELL;
+
+#ifdef MALLOCDEBUG
+	header->size_in_use[first_cell] = FREED_CELL;
+#endif
 }
 
 /**
@@ -130,13 +147,13 @@ void cleanup_alloc(void *head, void *ptr)
 */
 bool zone_is_empty(void *head)
 {
-    struct s_mcell_header *header = head;
+	struct s_mcell_header *header = head;
 
-    for (size_t i = 0; i < header->total_cells; i++) {
-        if (header->size_in_use[i] != 0)
-            return false;
-    }
-    return true;
+	for (size_t i = 0; i < header->total_cells; i++) {
+		if (!CELL_AVAILABLE(header->size_in_use[i]))
+			return false;
+	}
+	return true;
 }
 
 /**
@@ -151,38 +168,38 @@ bool zone_is_empty(void *head)
 */
 void *resize_alloc(void *head, void *ptr, size_t size)
 {
-    struct s_mcell_header *header = head;
-    uint32_t cell_amount = size / CELL_SIZE + 1;
+	struct s_mcell_header *header = head;
+	uint32_t cell_amount = size / CELL_SIZE + 1;
 
-    if (ptr == NULL)
-        return NULL;
-    if (size > header->max_size)
-        return NULL;
+	if (ptr == NULL)
+		return NULL;
+	if (size > header->max_size)
+		return NULL;
 
-    size_t current_size = get_alloc_size(head, ptr);
-    uint32_t current_cell_amount = current_size / CELL_SIZE + (current_size % CELL_SIZE ? 1 : 0);
-    uint32_t nth_cell = (ptr - header->allocs) / CELL_SIZE;
+	size_t current_size = get_alloc_size(head, ptr);
+	uint32_t current_cell_amount = current_size / CELL_SIZE + (current_size % CELL_SIZE ? 1 : 0);
+	uint32_t nth_cell = (ptr - header->allocs) / CELL_SIZE;
 
-    if (cell_amount == current_cell_amount)
-        return ptr;
-    if (cell_amount < current_cell_amount) {
-        header->size_in_use[nth_cell + cell_amount - 1] = calc_cell_size(size);
-        for (uint32_t i = 0; i < current_cell_amount - cell_amount; i++) {
-            header->size_in_use[nth_cell + cell_amount + i - 1] = 0;
-        }
-        return ptr;
-    }
+	if (cell_amount == current_cell_amount)
+		return ptr;
+	if (cell_amount < current_cell_amount) {
+		header->size_in_use[nth_cell + cell_amount - 1] = calc_cell_size(size);
+		for (uint32_t i = 0; i < current_cell_amount - cell_amount; i++) {
+			header->size_in_use[nth_cell + cell_amount + i - 1] = 0;
+		}
+		return ptr;
+	}
 
-    // the required space is bigger
-    if (next_used_cell(&header->size_in_use[nth_cell + current_cell_amount], header->total_cells - nth_cell - current_cell_amount, cell_amount - current_cell_amount))
-        return NULL;
+	// the required space is bigger
+	if (next_used_cell(&header->size_in_use[nth_cell + current_cell_amount], header->total_cells - nth_cell - current_cell_amount, cell_amount - current_cell_amount))
+		return NULL;
 
-    for (uint32_t i = 0; i < cell_amount - current_cell_amount; i++) {
-        header->size_in_use[nth_cell] = MULTI_CELL;
-        nth_cell++;
-    }
-    header->size_in_use[nth_cell] = calc_cell_size(size);
-    return ptr;
+	for (uint32_t i = 0; i < cell_amount - current_cell_amount; i++) {
+		header->size_in_use[nth_cell] = MULTI_CELL;
+		nth_cell++;
+	}
+	header->size_in_use[nth_cell] = calc_cell_size(size);
+	return ptr;
 }
 
 /**
@@ -190,20 +207,20 @@ void *resize_alloc(void *head, void *ptr, size_t size)
 */
 size_t print_info(void *head)
 {
-    struct s_mcell_header *header = head;
-    size_t total_size = 0;
+	struct s_mcell_header *header = head;
+	size_t total_size = 0;
 
-    for (size_t i = 0; i < header->total_cells; i++) {
-        if (header->size_in_use[i] == 0)
-            continue;
+	for (size_t i = 0; i < header->total_cells; i++) {
+		if (CELL_AVAILABLE(header->size_in_use[i]))
+			continue;
 
-        void *start = header->allocs + CELL_SIZE * i;
-        size_t size = get_alloc_size(head, start);
-        i += size / CELL_SIZE + (size % CELL_SIZE ? 1 : 0);
-        fprintf(stderr, "%p - %p : %lu bytes\n", start, start + size, size);
-        total_size += size;
-    }
-    return total_size;
+		void *start = header->allocs + CELL_SIZE * i;
+		size_t size = get_alloc_size(head, start);
+		i += size / CELL_SIZE + (size % CELL_SIZE ? 1 : 0);
+		fprintf(stderr, "%p - %p : %lu bytes\n", start, start + size, size);
+		total_size += size;
+	}
+	return total_size;
 }
 
 /**
@@ -211,20 +228,22 @@ size_t print_info(void *head)
  */
 void print_debug(void *head)
 {
-    struct s_mcell_header *header = head;
+	struct s_mcell_header *header = head;
 
-    for (size_t i = 0; i < header->total_cells; i++) {
-        if (i % 8 == 0)
-            fprintf(stderr, "\n");
+	for (size_t i = 0; i < header->total_cells; i++) {
+		if (i % 8 == 0)
+			fprintf(stderr, "\n");
 
-        if (header->size_in_use[i] == MULTI_CELL)
-            fprintf(stderr, "[\033[31m%.2x\033[0m]  ", header->size_in_use[i]);
-        else if (header->size_in_use[i] != 0)
-            fprintf(stderr, "[\033[91m%.2x\033[0m]  ", header->size_in_use[i]);
-        else
-            fprintf(stderr, "[\033[36m%.2x\033[0m]  ", header->size_in_use[i]);
-    }
-    fprintf(stderr, "\n");
+		if (header->size_in_use[i] == MULTI_CELL)
+			fprintf(stderr, "[\033[31m%.2x\033[0m]  ", header->size_in_use[i]);
+		else if (header->size_in_use[i] == 0)
+			fprintf(stderr, "[\033[36m%.2x\033[0m]  ", header->size_in_use[i]);
+		else if (header->size_in_use[i] == FREED_CELL)
+			fprintf(stderr, "[\033[32m%.2x\033[0m]  ", 0); // Marks freed pointer.
+		else
+			fprintf(stderr, "[\033[91m%.2x\033[0m]  ", header->size_in_use[i]);
+	}
+	fprintf(stderr, "\n");
 }
 
 /**
@@ -234,14 +253,14 @@ void print_debug(void *head)
 /* needed for getting the size for a out of zone realloc (need to know how much to copy) */
 size_t get_alloc_size(void *head, void *ptr)
 {
-    struct s_mcell_header *header = head;
-    size_t size = 0;
+	struct s_mcell_header *header = head;
+	size_t size = 0;
 
-    uint32_t nth_cell = (ptr - header->allocs) / CELL_SIZE;
+	uint32_t nth_cell = (ptr - header->allocs) / CELL_SIZE;
 
-    while(header->size_in_use[nth_cell] == MULTI_CELL) {
-        size += CELL_SIZE;
-        nth_cell++;
-    }
-    return size + header->size_in_use[nth_cell];
+	while(header->size_in_use[nth_cell] == MULTI_CELL) {
+		size += CELL_SIZE;
+		nth_cell++;
+	}
+	return size + header->size_in_use[nth_cell];
 }
